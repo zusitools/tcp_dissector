@@ -237,19 +237,17 @@ function build_tree(buffer, offset, tree, parent_node)
 
     if length == 0x00000000 then
       -- Node start
-      id = buffer(offset,2):le_uint()
+      local id = buffer(offset,2):le_uint()
       offset = offset + 2
 
+      local node = nil
       if parent_node ~= nil and parent_node.nodes ~= nil then
         node = parent_node.nodes[id]
-      else
-        node = nil
       end
 
+      local descr = string.format("Node, id = 0x%x", id)
       if node ~= nil then
-        descr = string.format("Node, id = 0x%x [%s]", id, node.name)
-      else
-        descr = string.format("Node, id = 0x%x", id)
+        descr = descr .. string.format(" [%s]", node.name)
       end
 
       offset = build_tree(buffer, offset, tree:add(buffer(offset - 4,4), descr), node)
@@ -259,42 +257,43 @@ function build_tree(buffer, offset, tree, parent_node)
       return offset
     else
       -- Attribute
-      id = buffer(offset,2):le_uint()
-      value = buffer(offset + 2, length - 2)
+      local id = buffer(offset,2):le_uint()
+      local value = buffer(offset + 2, length - 2)
+      local attr = nil
 
-      if node ~= nil and node.attributes ~= nil then
-        if node.attributes[id] ~= nil then
-          attr = node.attributes[id]
+      if parent_node ~= nil and parent_node.attributes ~= nil then
+        if parent_node.attributes[id] ~= nil then
+          attr = parent_node.attributes[id]
         else
-          attr = node.attributes.other
+          attr = parent_node.attributes.other
         end
-      else
-        attr = nil
       end
 
-      if attr.name_enum ~= nil and attr.name_enum[id] ~= nil then
-        name = attr.name_enum[id]
-      else
-        name = attr.name
-      end
-
+      local descr = string.format("Attribute, id = 0x%X", id)
       if attr ~= nil then
-        descr = string.format("Attribute, id = 0x%X [%s]", id, name)
-        typ = attr.typ
-        if typ == "byte" or typ == "word" or typ == "cardinal" then
-          descr = descr .. string.format(", value: %s = %d", typ, value:le_uint())
+        local name = attr.name
+        if attr.name_enum ~= nil and attr.name_enum[id] ~= nil then
+          name = attr.name_enum[id]
+        end
+        descr = descr .. string.format(" [%s]", name)
+
+        local typ = attr.typ
+        if typ == "byte" or typ == "word" or typ == "cardinal" or typ == "shortint" or typ == "smallint" or typ == "integer" then
+          local value_decoded
+          if typ == "byte" or typ == "word" or typ == "cardinal" then
+            value_decoded = value:le_uint()
+          else
+            value_decoded = value:le_int()
+          end
+          descr = descr .. string.format(", value: %s = %d", typ, value_decoded)
           if attr.enum ~= nil then
-            value_uint = value:le_uint()
-            if attr.enum[value_uint] ~= nil then
-              descr = descr .. string.format(" [%s]", attr.enum[value_uint])
+            if attr.enum[value_decoded] ~= nil then
+              descr = descr .. string.format(" [%s]", attr.enum[value_decoded])
             elseif attr.enum.other ~= nil then
               descr = descr .. string.format(" [%s]", attr.enum.other)
             end
           end
           descr = descr .. string.format(" [%s]", value:bytes())
-
-        elseif typ == "shortint" or typ == "smallint" or typ == "integer" then
-          descr = descr .. string.format(", value: %s = %d [%s]", typ, value:le_sint(), value:bytes())
 
         elseif typ == "int64" then
           descr = descr .. string.format(", value: %s = %d [%s]", typ, value:le_int64(), value:bytes())
@@ -309,7 +308,7 @@ function build_tree(buffer, offset, tree, parent_node)
           descr = descr .. string.format(", value: ? = %s", value:bytes())
         end
       else
-        descr = string.format("Attribute, id = 0x%X, value: ? = %s", id, value:bytes())
+        descr = descr .. string.format(", value: ? = %s", value:bytes())
       end
 
       tree:add(buffer(offset, length), descr)
