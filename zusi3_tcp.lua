@@ -1145,11 +1145,15 @@ data_format = {
   },
 }
 
--- Returns the offset at which to continue parsing. Throws an exception if there is not enough data.
+-- Parses the content of a single node (and its children) or attribute.
+-- and creates a new child node in the specified tree for the parse result.
+-- Returns the offset at which the caller is to continue parsing.
+-- Throws an out-of-range exception if the buffer does not contain enough data.
 function build_tree(buffer, offset, tree, parent_node)
-  local oldoffset = offset
+  local startoffset = offset
   while true do
-    if offset == buffer:len() then return end
+    -- Do not try to assemble more TCP segments into one PDU if we finished reading a node on the top level.
+    if startoffset == 0 and offset == buffer:len() then return end
 
     local length = buffer(offset,4):le_uint()
     offset = offset + 4
@@ -1172,7 +1176,7 @@ function build_tree(buffer, offset, tree, parent_node)
       offset = build_tree(buffer, offset, tree:add(buffer(offset - 4,4), descr), node)
     elseif length == 0xffffffff then
       -- Node end
-      tree:set_len(offset - oldoffset)
+      tree:set_len(offset - startoffset)
       return offset
     else
       -- Attribute
