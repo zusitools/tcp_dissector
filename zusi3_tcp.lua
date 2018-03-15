@@ -1379,22 +1379,22 @@ function build_tree(buffer, offset, tree, parent_node)
               descr = descr .. string.format(" [%s]", attr.enum.other)
             end
           end
-          descr = descr .. string.format(" [%s]", value:bytes())
+          descr = descr .. string.format(" [%s]", tostring(value:bytes()))
 
         elseif (typ == "int64" and length == 8+2) then
-          descr = descr .. string.format(", value: %s = %d [%s]", typ, value:le_int64(), value:bytes())
+          descr = descr .. string.format(", value: %s = %d [%s]", typ, value:le_int64(), tostring(value:bytes()))
 
         elseif (typ == "single" and length == 4+2) or (typ == "double" and length == 8+2) then
-          descr = descr .. string.format(", value: %s = %f [%s]", typ, value:le_float(), value:bytes())
+          descr = descr .. string.format(", value: %s = %f [%s]", typ, value:le_float(), tostring(value:bytes()))
 
         elseif typ == "string" then
-          descr = descr .. string.format(", value: string = \"%s\" [%s]", value:string(), value:bytes())
+          descr = descr .. string.format(", value: string = \"%s\" [%s]", value:string(), tostring(value:bytes()))
 
         else
-          descr = descr .. string.format(", value: ? = %s", value:bytes())
+          descr = descr .. string.format(", value: ? = %s", tostring(tostring(value:bytes())))
         end
       else
-        descr = descr .. string.format(", value: ? = %s", value:bytes())
+        descr = descr .. string.format(", value: ? = %s", tostring(value:bytes()))
       end
 
       tree:add(buffer(offset, length), descr)
