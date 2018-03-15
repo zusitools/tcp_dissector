@@ -1362,7 +1362,9 @@ function build_tree(buffer, offset, tree, parent_node)
         descr = descr .. string.format(" [%s]", name)
 
         local typ = attr.typ
-        if typ == "byte" or typ == "word" or typ == "cardinal" or typ == "shortint" or typ == "smallint" or typ == "integer" then
+        if (typ == "byte" and length == 1+2) or (typ == "word" and length == 2+2)
+            or (typ == "cardinal" and length == 4+2) or (typ == "shortint" and length == 1+2)
+            or (typ == "smallint" and length == 2+2) or (typ == "integer" and length == 4+2) then
           local value_decoded
           if typ == "byte" or typ == "word" or typ == "cardinal" then
             value_decoded = value:le_uint()
@@ -1379,10 +1381,10 @@ function build_tree(buffer, offset, tree, parent_node)
           end
           descr = descr .. string.format(" [%s]", value:bytes())
 
-        elseif typ == "int64" then
+        elseif (typ == "int64" and length == 8+2) then
           descr = descr .. string.format(", value: %s = %d [%s]", typ, value:le_int64(), value:bytes())
 
-        elseif typ == "single" or typ == "double" then
+        elseif (typ == "single" and length == 4+2) or (typ == "double" and length == 8+2) then
           descr = descr .. string.format(", value: %s = %f [%s]", typ, value:le_float(), value:bytes())
 
         elseif typ == "string" then
