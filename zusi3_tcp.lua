@@ -1405,7 +1405,8 @@ end
 
 function zusi3_proto.dissector(buffer, pinfo, tree)
   local subtree = tree:add(zusi3_proto,buffer(), "Zusi 3 TCP data")
-  if not pcall(build_tree, buffer, 0, subtree, data_format) then
+  local status, err = pcall(build_tree, buffer, 0, subtree, data_format)
+  if not status then
     pinfo.desegment_len = DESEGMENT_ONE_MORE_SEGMENT
     pinfo.desegment_offset = 0 -- a TCP packet should not contain more than one PDU, so always start from the beginning
   else
