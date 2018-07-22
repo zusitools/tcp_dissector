@@ -1129,7 +1129,6 @@ data_format = {
                       [11] = "HET",
                       [12] = "UT",
                       [13] = "ZLB",
-
                     }},
                     [0x0003] = { typ = "int", name = "Typ", enum = {
                       [0] = "undefiniert",
@@ -1138,14 +1137,22 @@ data_format = {
                       [3] = "Grundstellung links (weiß)",
                       [4] = "Grundstellung rechts (gelb)",
                       [5] = "Grundstellung links (gelb)",
-
                     }},
                     [0x0004] = { typ = "byte", name = "Aktuelle Lage", enum = {
                       [0] = "Zusi-Grundstellung spitz befahren",
                       [1] = "Nicht in Grundstellung spitz befahren",
                       [2] = "Zusi-Grundstellung stumpf befahren",
                       [3] = "Nicht in Grundstellung stumpf befahren",
-
+                    }},
+                    [0x0005] = { typ = "byte", name = "Fahrtrichtung", enum = {
+                      [0] = "undefiniert",
+                      [1] = "spitz befahren",
+                      [2] = "stumpf befahren",
+                    }},
+                    [0x0006] = { typ = "byte", name = "Umlaufmodus Stumpfbefahrung", enum = {
+                      [0] = "undefiniert",
+                      [1] = "Weiche läuft automatisch um",
+                      [2] = "Weiche muss gestellt werden",
                     }},
                   }
                 }
