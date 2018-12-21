@@ -1050,6 +1050,7 @@ data_format = {
                 [0x000F] = { typ = "byte", name = "Melder „Zentrales Öffnen rechts“", enum = aus_an, },
                 [0x0010] = { typ = "byte", name = "Status Melder „Zentrales Öffnen links“", enum = aus_dauerlicht_blinkend, },
                 [0x0011] = { typ = "byte", name = "Status Melder „Zentrales Öffnen rechts“", enum = aus_dauerlicht_blinkend, },
+                [0x0012] = { typ = "byte", name = "Melder „Grünschleife“", enum = aus_an, },
               },
             },
             [0x008D] = {
