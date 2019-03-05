@@ -1344,6 +1344,11 @@ data_format = {
 -- Returns the offset at which the caller is to continue parsing.
 -- Throws an out-of-range exception if the buffer does not contain enough data.
 function build_tree(buffer, offset, tree, parent_node)
+  -- It does not make sense to try and parse a PDU
+  -- if we don't have at least one empty node's worth of data
+  -- (4 bytes PACKET_LENGTH, 2 bytes ID, 4 bytes END)
+  if buffer:len() < 4+2+4 then error("Not enough data in buffer") end
+
   local startoffset = offset
   while true do
     -- Do not try to assemble more TCP segments into one PDU if we finished reading a node on the top level.
@@ -1354,6 +1359,10 @@ function build_tree(buffer, offset, tree, parent_node)
 
     if length == 0x00000000 then
       -- Node start
+
+      -- Early return if there is not yet enough data
+      if buffer:len() - offset < 2+4 then error("Not enough data in buffer") end
+
       local id = buffer(offset,2):le_uint()
       offset = offset + 2
 
@@ -1374,6 +1383,10 @@ function build_tree(buffer, offset, tree, parent_node)
       return offset
     else
       -- Attribute
+
+      -- Early return if there is not yet enough data
+      if buffer:len() - offset < length - 2 then error("Not enough data in buffer") end
+
       local id = buffer(offset,2):le_uint()
       local value = buffer(offset + 2, length - 2)
       local attr = nil
