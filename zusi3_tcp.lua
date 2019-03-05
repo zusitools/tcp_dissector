@@ -1192,6 +1192,18 @@ data_format = {
                 },
               },
             },
+            [0x0003] = {
+              name = "Mausklick auf ZusiDisplay-Melder",
+              attributes = {
+                [0x0001] = { typ = "string", name = "Name des Melders", },
+                [0x0002] = { typ = "byte", name = "Klicktyp", enum = {
+                  [0] = "Klickanfang",
+                  [1] = "Klickende",
+                }},
+                [0x0003] = { typ = "single", name = "x-Koordinate (0..1)", },
+                [0x0004] = { typ = "single", name = "y-Koordinate (0..1)", },
+              },
+            },
           },
         },
         [0x000C] = {
