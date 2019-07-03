@@ -196,6 +196,11 @@ aus_dauerlicht_blinkend = {
   [2] = "blinkend",
 }
 
+boolean = {
+  [0] = "nein",
+  [1] = "ja",
+}
+
 tastaturzuordnungen = {
   [0x00] = "Keine Tastaturbedienung",
   [0x01] = "Fahrschalter",
@@ -574,6 +579,51 @@ kombischalterfunktionen = {
   [0x85] = "Fahrzeugintern 20",
 }
 
+etcs_level = {
+  [0] = "ETCS Level undefiniert",
+  [1] = "ETCS Level STM",
+  [2] = "ETCS Level 0",
+  [3] = "ETCS Level 1",
+  [4] = "ETCS Level 2",
+  [5] = "ETCS Level 3",
+}
+
+etcs_modus = {
+   [0] = "undefiniert",
+   [1] = "FS",
+   [2] = "OS",
+   [3] = "SR",
+   [4] = "SH",
+   [5] = "UN",
+   [6] = "SL",
+   [7] = "SB",
+   [8] = "TR",
+   [9] = "PT",
+  [10] = "SF",
+  [11] = "IS",
+  [12] = "NP",
+  [13] = "NL",
+  [14] = "SE",
+  [15] = "SN",
+  [16] = "RV",
+  [17] = "LS",
+  [18] = "PS",
+}
+
+zbs_betriebszustand = {
+  [0] = "undefiniert",
+  [1] = "aus (Kaltstart)",
+  [2] = "aus (Warmstart)",
+  [3] = "Systemhochlauf",
+  [4] = "Test-Aufforderung",
+  [5] = "Test läuft",
+  [6] = "B",
+  [7] = "X",
+  [8] = "Z",
+  [9] = "R",
+  [10] = "Störbetrieb",
+}
+
 indusi_einstellungen = {
   name = "System aus der Indusi-Familie - Einstellungen",
   attributes = {
@@ -602,6 +652,12 @@ indusi_einstellungen = {
     [0x000A] = { typ = "byte", name = "Luftabsperrhahn", enum = {
       [1] = "abgesperrt",
       [2] = "offen",
+    }},
+    [0x000B] = { typ = "byte", name = "Klartextmeldungen", enum = {
+      [0] = "Keine Klartextmeldungen möglich",
+      [1] = "Klartextmeldungen möglich, aber nicht aktiv",
+      [2] = "Klartextmeldungen aktiv",
+      [3] = "nur Klartextmeldungen möglich",
     }},
   },
   nodes = {
@@ -658,6 +714,136 @@ indusi_einstellungen = {
   },
 }
 
+etcs_einstellungen_interaktionen = {
+  name = "System aus der ETCS-Familie - Einstellungen und Interaktionen",
+  attributes = {
+    [0x0001] = { typ = "byte", name = "Zustand", enum = {
+      [0] = "Zugdateneingabe undefiniert",
+      [1] = "Zugdateneingabe nötig",
+      [2] = "Zugdaten eingegeben",
+      [3] = "Start of Mission abgeschlossen",
+    }},
+    [0x0005] = { typ = "byte", name = "ETCS-Störschalter", enum = {
+      [1] = "ETCS abgeschaltet",
+      [2] = "ETCS eingeschaltet",
+    }},
+    [0x0006] = { typ = "byte", name = "ETCS-Hauptschalter", enum = {
+      [1] = "ETCS ausgeschaltet",
+      [2] = "ETCS eingeschaltet",
+    }},
+    [0x0007] = { typ = "byte", name = "Luftabsperrhahn", enum = {
+      [1] = "abgesperrt",
+      [2] = "offen",
+    }},
+    [0x0008] = { typ = "byte", name = "ETCS-Quittierschalter", enum = {
+      [1] = "verlegt",
+      [2] = "Grundstellung",
+    }},
+    [0x0009] = { typ = "byte", name = "Override-Anforderung, Auslösung durch Client", enum = {
+      [1] = "Override angefordert",
+      [2] = "Grundstellung",
+    }},
+    [0x000A] = { typ = "byte", name = "Start", enum = {
+      [1] = "Startkommando",
+      [2] = "Grundstellung",
+    }},
+    [0x000B] = { typ = "word", name = "Level einstellen/anfordern", enum = etcs_level, },
+    [0x000C] = { typ = "word", name = "Wenn STM ausgewählt: Index des aktiven STM-Systems in der ftd-Datei (1-indexiert)", },
+    [0x000D] = { typ = "word", name = "Modus einstellen/anfordern", enum = etcs_modus, },
+    [0x000E] = { typ = "byte", name = "TAF-Modus", enum = {
+      [1] = "TAF quittiert",
+      [2] = "Grundstellung",
+      [3] = "TAF abgelehnt",
+    }},
+    [0x000F] = { typ = "byte", name = "Zug wurde neu übernommen", enum = boolean, },
+    [0x0010] = { typ = "byte", name = "Info-Ton nötig", enum = boolean, },
+  },
+  nodes = {
+    [0x0002] = {
+      name = "Verfügbares STM-System",
+      attributes = {
+        [0x0001] = { typ = "word", name = "Index des STM-Systems in der ftd-Datei (1-indexiert)", },
+        [0x0002] = { typ = "string", name = "Name des STM-Systems als Text", },
+      },
+    },
+    [0x0003] = {
+      name = "Zugdaten",
+      attributes = {
+        [0x0001] = { typ = "word", name = "Bremshundertstel in %", },
+        [0x0002] = { typ = "word", name = "Zugkategorie", },
+        [0x0003] = { typ = "word", name = "Zuglänge in m", },
+        [0x0004] = { typ = "word", name = "Höchstgeschwindigkeit in km/h", },
+        [0x0005] = { typ = "word", name = "Achslast in kg", },
+        [0x0006] = { typ = "string", name = "Zugnummer", },
+        [0x0007] = { typ = "string", name = "Tf-Nummer", },
+      },
+    },
+    [0x0004] = {
+      name = "Spec",
+      attributes = {
+        [0x0001] = { typ = "byte", name = "Reibwert", enum = {
+          [1] = "vermindert",
+          [2] = "nicht vermindert",
+        }},
+      },
+    },
+  },
+}
+
+zbs_einstellungen_interaktionen = {
+  name = "System ZBS - Einstellungen und Interaktionen",
+  attributes = {
+    [0x0003] = { typ = "byte", name = "ZBS-Störschalter", enum = {
+      [1] = "ZBS abgeschaltet",
+      [2] = "ZBS eingeschaltet",
+    }},
+    [0x0004] = { typ = "byte", name = "ZBS-Hauptschalter", enum = {
+      [1] = "ZBS ausgeschaltet",
+      [2] = "ZBS eingeschaltet",
+    }},
+    [0x0005] = { typ = "byte", name = "Luftabsperrhahn", enum = {
+      [1] = "abgesperrt",
+      [2] = "offen",
+    }},
+    [0x0006] = { typ = "word", name = "Betriebszustand einstellen/anfordern", enum = zbs_betriebszustand, },
+    [0x0007] = { typ = "word", name = "Wenn Altsystem ausgewählt: Index des aktiven Altsystems in der ftd-Datei (1-indexiert)", },
+    [0x0008] = { typ = "byte", name = "Zug wurde neu übernommen", enum = boolean, },
+  },
+  nodes = {
+    [0x0001] = {
+      name = "Verfügbares Altsystem",
+      attributes = {
+        [0x0001] = { typ = "word", name = "Index des aktiven Altsystems in der ftd-Datei (1-indexiert)", },
+        [0x0002] = { typ = "string", name = "Name des Altsystems als Text", },
+      },
+    },
+    [0x0002] = {
+      name = "Zugdaten",
+      attributes = {
+        [0x0001] = { typ = "word", name = "BRH-Wert (Bremshundertstel)", },
+        [0x0002] = { typ = "word", name = "ZL-Wert (Zuglänge) in m", },
+        [0x0003] = { typ = "word", name = "VMZ-Wert (Höchstgeschwindigkeit) in km/h", },
+        [0x0004] = { typ = "string", name = "Zugnummer", },
+        [0x0005] = { typ = "string", name = "Tf-Nummer", },
+      },
+    },
+  },
+}
+
+fahrsperre_einstellungen_interaktionen = {
+  name = "System Fahrsperre - Einstellungen und Interaktionen",
+  attributes = {
+    [0x0001] = { typ = "byte", name = "Fahrsperre-Störschalter", enum = {
+      [1] = "Fahrsperre abgeschaltet",
+      [2] = "Fahrsperre eingeschaltet",
+    }},
+    [0x0002] = { typ = "byte", name = "Fahrsperre-Hauptschalter", enum = {
+      [1] = "Fahrsperre ausgeschaltet",
+      [2] = "Fahrsperre eingeschaltet",
+    }},
+  },
+}
+
 data_format = {
   nodes = {
     [0x0001] = {
@@ -684,6 +870,7 @@ data_format = {
               [0] = "Client akzeptiert",
               other = "Client nicht akzeptiert",
             }},
+            [0x0004] = { name = "Fahrplan-Startdatum und -zeit", typ = "double", },
           },
         },
       },
@@ -816,7 +1003,7 @@ data_format = {
                       name = "Übertragungsausfall",
                       attributes = {
                         [0x0001] = { typ = "single", name = "Zielgeschwindigkeit in m/s", },
-                        [0x0002] = { typ = "word", name = "Status:", enum = {
+                        [0x0002] = { typ = "word", name = "Status", enum = {
                           [1] = "eingeleitet",
                           [2] = "Ü blinkt",
                           [3] = "erste Quittierung erfolgt",
@@ -893,6 +1080,10 @@ data_format = {
                       [10] = "LZB-Rechnerausfall",
                       [11] = "LZB-Nothalt überfahren",
                       [12] = "Übertragungsausfall in verdeckter Aufnahme",
+                      [13] = "Geschwindigkeitsüberschreitung nach LZB-Ü-Ausfall",
+                      [14] = "Richtungsschalter verlegt",
+                      [25] = "LZB-Rückrollüberwachung",
+                      [26] = "LZB Überschreitung 200 m nach Befehl 40",
                     }},
                     [0x0004] = { typ = "string", name = "Grund der Zwangsbremsung", },
                     [0x0005] = { typ = "byte", name = "Melder 1000 Hz", enum = aus_an, },
@@ -914,9 +1105,9 @@ data_format = {
                       [4] = "Restriktiv + 500 Hz",
                       [5] = "Prüfablauf nach LZB-Übertragungsausfall (>0)",
                     }},
-                    [0x000D] = { typ = "word", name = "LZB-Zustand:", enum = {
+                    [0x000D] = { typ = "word", name = "LZB-Zustand", enum = {
                       [0] = "Keine LZB-Führung",
-                      [1] = "Normale Fahrt",
+                      [1] = "Normale LZB-Fahrt",
                       [2] = "Nothalt",
                       [3] = "LZB-Halt überfahren",
                       [4] = "Rechnerausfall",
@@ -959,6 +1150,126 @@ data_format = {
                     [0x002B] = { typ = "byte", name = "Melder Zugart Rechts (S-Bahn)", enum = aus_an, },
                   },
                 },
+                [0x0004] = etcs_einstellungen_interaktionen,
+                [0x0005] = {
+                  name = "System aus der ETCS-Familie - Betriebsdaten",
+                  attributes = {
+                    [0x0001] = { typ = "word", name = "Aktiver Level", enum = etcs_level, },
+                    [0x0002] = { typ = "word", name = "Aktiver ETCS-Modus", enum = etcs_modus, },
+                    [0x0003] = { typ = "word", name = "Grund der Zwangs- oder Betriebszwangsbremsung", enum = {
+                      [0] = "Keine Zwangsbremsung",
+                      [6] = "v-Max-Überwachung",
+                      [7] = "Funktionsprüfung",
+                      [10] = "Rechnerausfall",
+                      [11] = "ETCS-Nothalt überfahren",
+                      [15] = "ETCS-Halt überfahren",
+                      [16] = "ETCS: Stillstands-/Rücklaufüberwachung ausgelöst",
+                      [17] = "ETCS: nicht quittiert",
+                      [18] = "ETCS: Funkausfall",
+                      [19] = "ETCS: Balisenstörung",
+                      [20] = "ETCS: manueller Levelwechsel",
+                    }},
+                    [0x0004] = { typ = "string", name = "Grund der Zwangs- oder Betriebszwangsbremsung als Text", },
+                    [0x0009] = { typ = "single", name = "Zielgeschwindigkeit in m/s (<0: dunkel)", },
+                    [0x000A] = { typ = "single", name = "Zielweg in m (<0: dunkel)", },
+                    [0x000B] = { typ = "single", name = "Abstand Bremseinsatzpunkt in m", },
+                    [0x000C] = { typ = "single", name = "Entlassungsgeschwindigkeit in m/s", },
+                    [0x000D] = { typ = "single", name = "Sollgeschwindigkeit in m/s", },
+                    [0x000E] = { typ = "single", name = "Warngeschwindigkeit in m/s", },
+                    [0x000F] = { typ = "single", name = "Bremsgeschwindigkeit in m/s", },
+                    [0x0010] = { typ = "single", name = "Zwangsbremsgeschwindigkeit in m/s", },
+                    [0x0011] = { typ = "byte", name = "Bremskurve läuft ab", enum = boolean },
+                    [0x0013] = { typ = "byte", name = "TAF-Status", enum = {
+                      [0] = "kein TAF aktiv",
+                      [1] = "TAF wird nötig",
+                      [2] = "TAF angefordert",
+                      [3] = "TAF quittiert",
+                      [4] = "TAF abgelehnt",
+                    }},
+                    [0x0014] = { typ = "byte", name = "Override aktiv", enum = boolean },
+                    [0x0015] = { typ = "byte", name = "Notruf-Status", enum = {
+                      [0] = "kein Notruf",
+                      [1] = "bedingter Notruf aktiv",
+                      [2] = "unbedingter Notruf aktiv",
+                    }},
+                    [0x0016] = { typ = "word", name = "Betriebszwangsbremsung", enum = {
+                      [0] = "Keine Zwangsbremsung",
+                      [6] = "v-Max-Überwachung",
+                      [7] = "Funktionsprüfung",
+                      [10] = "Rechnerausfall",
+                      [11] = "ETCS-Nothalt überfahren",
+                      [15] = "ETCS-Halt überfahren",
+                      [16] = "ETCS: Stillstands-/Rücklaufüberwachung ausgelöst",
+                      [17] = "ETCS: nicht quittiert",
+                      [18] = "ETCS: Funkausfall",
+                      [19] = "ETCS: Balisenstörung",
+                      [20] = "ETCS: manueller Levelwechsel",
+                    }},
+                  },
+                  nodes = {
+                    [0x0005] = {
+                      name = "STM-Info",
+                      attributes = {
+                        [0x0001] = { typ = "word", name = "Index des aktiven STM-Systems in der ftd-Datei (1-indexiert)", },
+                      },
+                    },
+                    [0x0006] = {
+                      name = "Angekündigter oder neu aktivierter Level",
+                      attributes = {
+                        [0x0001] = { typ = "word", name = "Neuer Level", enum = etcs_level, },
+                        [0x0002] = { typ = "byte", name = "Quittierung", enum = {
+                          [0] = "gar keine Quittierung nötig",
+                          [1] = "noch keine Quittierung nötig",
+                          [2] = "Quittierung nötig, aber noch nicht alle Voraussetzungen gegeben",
+                          [3] = "Quittierung nötig",
+                          [4] = "quittiert",
+                          [5] = "wirksam",
+                        }},
+                      },
+                    },
+                    [0x0007] = {
+                      name = "Angekündigter Modus",
+                      attributes = {
+                        [0x0001] = { typ = "word", name = "Neuer Modus", enum = etcs_modus, },
+                        [0x0002] = { typ = "byte", name = "Quittierung", enum = {
+                          [0] = "gar keine Quittierung nötig",
+                          [1] = "noch keine Quittierung nötig",
+                          [2] = "Quittierung nötig, aber noch nicht alle Voraussetzungen gegeben",
+                          [3] = "Quittierung nötig",
+                          [4] = "quittiert",
+                          [5] = "wirksam",
+                        }},
+                      },
+                    },
+                    [0x0008] = {
+                      name = "Funkstatus",
+                      attributes = {
+                        [0x0001] = { typ = "byte", name = "Zustand", enum = {
+                          [0] = "keine Verbindung",
+                          [1] = "Verbindung wird aufgebaut",
+                          [2] = "Verbindung steht",
+                          [3] = "Verbindung Neuaufbau",
+                          [4] = "Verbindung kann nicht hergestellt werden",
+                          [5] = "Verbindung ausgefallen",
+                        }},
+                      },
+                    },
+                    [0x0012] = {
+                      name = "Vorschaupunkt",
+                      attributes = {
+                        [0x0001] = { typ = "word", name = "Herkunft", enum = {
+                          [1] = "Strecke",
+                          [3] = "Hauptsignal",
+                          [9] = "Rangiersignal",
+                          [14] = "ETCS",
+                        }},
+                        [0x0002] = { typ = "single", name = "Geschwindigkeit in m/s (-1: ETCS-Ende)", },
+                        [0x0003] = { typ = "single", name = "Abstand in m", },
+                        [0x0004] = { typ = "single", name = "Höhenwert in m", },
+                      },
+                    },
+                  },
+                },
                 [0x0006] = {
                   name = "System aus der ZUB-Familie - Einstellungen",
                   attributes = {
@@ -994,7 +1305,57 @@ data_format = {
                       [11] = "LZB-Nothalt überfahren",
                       [12] = "Übertragungsausfall in verdeckter Aufnahme",
                     }},
-                    [0x000B] = { typ = "byte", name = "Betriebszwangsbremsung aktiv" },
+                    [0x000B] = { typ = "byte", name = "Betriebszwangsbremsung aktiv", },
+                  },
+                },
+                [0x0008] = zbs_einstellungen_interaktionen,
+                [0x0009] = {
+                  name = "System ZBS - Betriebsdaten",
+                  attributes = {
+                    [0x0001] = { typ = "word", name = "Aktiver Betriebszustand", enum = zbs_betriebszustand, },
+                    [0x0002] = { typ = "word", name = "Grund der Zwangsbremsung", enum = {
+                      [0] = "Keine Zwangsbremsung",
+                      [6] = "v-Max-Überwachung",
+                      [7] = "Funktionsprüfung",
+                      [10] = "Rechnerausfall",
+                      [21] = "ZBS: Halt überfahren",
+                      [22] = "ZBS: Balisenstörung",
+                      [23] = "ZBS: Rollüberwachung",
+                    }},
+                    [0x0004] = { typ = "word", name = "Betriebszwangsbremsung", enum = {
+                      [0] = "Keine Zwangsbremsung",
+                      [6] = "v-Max-Überwachung",
+                      [7] = "Funktionsprüfung",
+                      [10] = "Rechnerausfall",
+                      [21] = "ZBS: Halt überfahren",
+                      [22] = "ZBS: Balisenstörung",
+                      [23] = "ZBS: Rollüberwachung",
+                    }},
+                    [0x0005] = { typ = "byte", name = "Melder Ü", enum = aus_an, },
+                    [0x0006] = { typ = "byte", name = "Melder G", enum = aus_dauerlicht_blinkend, },
+                    [0x0007] = { typ = "byte", name = "Melder S", enum = aus_an, },
+                    [0x0008] = { typ = "byte", name = "Melder A", enum = aus_dauerlicht_blinkend, },
+                    [0x0009] = { typ = "single", name = "Zielgeschwindigkeit in m/s (<0: dunkel)", },
+                    [0x000A] = { typ = "single", name = "Freigabegeschwindigkeit in m/s (<0: dunkel)", },
+                    [0x000B] = { typ = "byte", name = "Befehlsfahrt aktiv", enum = boolean, },
+                  },
+                  nodes = {
+                    [0x0003] = {
+                      name = "Altsystem-Info",
+                      attributes = {
+                        [0x0001] = { typ = "word", name = "Index des aktiven Altsystems in der ftd-Datei (1-indexiert)", },
+                      },
+                    }
+                  },
+                },
+                [0x000A] = fahrsperre_einstellungen_interaktionen,
+                [0x000B] = {
+                  name = "System Fahrsperre - Betriebsdaten",
+                  attributes = {
+                    [0x0001] = { typ = "byte", name = "Melder an", },
+                    [0x0002] = { typ = "byte", name = "Zwangsbremsung wirksam", },
+                    [0x0003] = { typ = "cardinal", name = "Zählerstand gewollte Vorbeifahrt", },
+                    [0x0004] = { typ = "cardinal", name = "Zählerstand ungewollte Vorbeifahrt", },
                   },
                 },
               },
@@ -1076,10 +1437,26 @@ data_format = {
                   [1] = "Deaktiviert",
                   [2] = "Normalzustand",
                 }},
+                [0x0006] = { typ = "byte", name = "Sanderzustand", enum = {
+                  [1] = "Sandet nicht",
+                  [2] = "Sandet",
+                }},
+                [0x0007] = { typ = "byte", name = "Bremsprobezustand", enum = {
+                  [0] = "Normalbetrieb",
+                  [1] = "Bremsprobemodus aktiv",
+                  -- weitere Zustaende, extern aktiviert
+                }},
+                [0x0006] = { typ = "word", name = "Stellung Richtungsschalter" },
               },
             },
             [0x008E] = {
-              name = "Status Zugverband",
+              name = "Status Zug",
+              attributes = {
+                [0x0002] = { typ = "byte", name = "Zugtyp", enum = {
+                  [0] = "Güterzug",
+                  [1] = "Reisezug",
+                }},
+              },
               nodes = {
                 [0x0001] = {
                   name = "Fahrzeug",
@@ -1104,6 +1481,8 @@ data_format = {
                       [5] = "R+Mg",
                     }},
                     [0x0005] = { typ = "single", name = "Fahrzeughöchstgeschwindigkeit in m/s", },
+                    [0x0006] = { typ = "string", name = "Baureihenangabe aus Fahrzeugdatei", },
+                    [0x0007] = { typ = "string", name = "Farbgebungsangabe aus Fahrzeugdatei", },
                   },
                 },
               },
@@ -1215,6 +1594,7 @@ data_format = {
               [0] = "Ende Ladepause (Start der Simulation)",
             }},
             [0x0004] = { typ = "string", name = "Transfer der Buchfahrplandatei", },
+            [0x0005] = { typ = "byte", name = "Zug wurde neu übernommen", enum = boolean, },
           },
         },
         [0x010A] = {
@@ -1234,6 +1614,9 @@ data_format = {
               name = "Zugbeeinflussung einstellen",
               nodes = {
                 [0x0002] = indusi_einstellungen,
+                [0x0004] = etcs_einstellungen_interaktionen,
+                [0x0008] = zbs_einstellungen_interaktionen,
+                [0x000A] = fahrsperre_einstellungen_interaktionen,
               },
             },
             [0x0003] = {
@@ -1332,6 +1715,7 @@ data_format = {
             [0x0003] = { typ = "word", name = "Nummer des Bildes", },
             [0x0004] = { typ = "byte", name = "Index der Textur", },
             [0x0005] = { name = "Serialisierte Bitmap-Datei", },
+            [0x0006] = { typ = "single", name = "Simulationszeit des übertragenen Bilds (0=0h, 1=24h)" },
           },
         },
       },
