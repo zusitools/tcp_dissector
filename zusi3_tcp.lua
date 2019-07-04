@@ -916,7 +916,7 @@ data_format = {
           nodes = {
             [0x0022] = {
               name = "Status Notbremssystem",
-              nodes = {
+              attributes = {
                 [0x0001] = { typ = "string", name = "Bauart Notbremssystem", },
                 [0x0002] = { typ = "byte", name = "Status Notbremssystem", enum = {
                   [0] = "NBÜ aus",
