@@ -1446,7 +1446,7 @@ data_format = {
                   [1] = "Bremsprobemodus aktiv",
                   -- weitere Zustaende, extern aktiviert
                 }},
-                [0x0006] = { typ = "word", name = "Stellung Richtungsschalter" },
+                [0x0008] = { typ = "word", name = "Stellung Richtungsschalter" },
               },
             },
             [0x008E] = {
