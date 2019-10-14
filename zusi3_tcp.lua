@@ -1760,10 +1760,10 @@ function build_tree(buffer, offset, tree, parent_node)
         descr = descr .. string.format(" [%s]", node.name)
       end
 
-      offset = build_tree(buffer, offset, tree:add(buffer(offset - 4,4), descr), node)
+      offset = build_tree(buffer, offset, tree:add(buffer(offset - 4 - 2, 6), descr), node)
     elseif length == 0xffffffff then
       -- Node end
-      tree:set_len(offset - startoffset)
+      tree:set_len(offset - startoffset + 4 + 2)
       return offset
     else
       -- Attribute
@@ -1827,7 +1827,7 @@ function build_tree(buffer, offset, tree, parent_node)
         descr = descr .. string.format(", value: ? = %s", tostring(value:bytes()))
       end
 
-      tree:add(buffer(offset, length), descr)
+      tree:add(buffer(offset - 4, length + 4), descr)
       offset = offset + length
     end
   end
