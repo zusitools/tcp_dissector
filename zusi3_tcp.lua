@@ -183,6 +183,9 @@ phys_quantities = {
   [0x00A6] = "Fahrzeugintern 18",
   [0x00A7] = "Fahrzeugintern 19",
   [0x00A8] = "Fahrzeugintern 20",
+  [0x00A9] = "Status Leuchtmelder für ZusiDisplay",
+  [0x00AA] = "Außenhelligkeit",
+  [0x00AB] = "Status Zug-Fahrdaten",
 }
 
 aus_an = {
@@ -194,6 +197,13 @@ aus_dauerlicht_blinkend = {
   [0] = "aus",
   [1] = "Dauerlicht",
   [2] = "blinkend",
+}
+
+aus_an_blinkend_invers = {
+  [0] = "aus",
+  [1] = "an",
+  [2] = "blinkend",
+  [3] = "blinkend invers",
 }
 
 boolean = {
@@ -871,6 +881,7 @@ data_format = {
               other = "Client nicht akzeptiert",
             }},
             [0x0004] = { name = "Fahrplan-Startdatum und -zeit", typ = "double", },
+            [0x0005] = { name = "Version des TCP-Protokolls", typ = "string", },
           },
         },
       },
@@ -933,6 +944,8 @@ data_format = {
                   [0] = "Normalbetrieb",
                   [1] = "Testmodus aktiv",
                 }},
+                [0x0006] = { typ = "byte", name = "Melder „System bereit“", enum = aus_dauerlicht_blinkend },
+                [0x0007] = { typ = "byte", name = "Melder „Notbremsung“", enum = aus_dauerlicht_blinkend },
               },
             },
             [0x0064] = {
@@ -957,6 +970,7 @@ data_format = {
                   [1] = "abgesperrt",
                   [2] = "offen",
                 }},
+                [0x0007] = { typ = "single", name = "Wert Weglängenmesser" },
               },
             },
             [0x0065] = {
@@ -1148,7 +1162,27 @@ data_format = {
                     [0x0029] = { typ = "byte", name = "Melder Zugart Links (S-Bahn)", enum = aus_an, },
                     [0x002A] = { typ = "byte", name = "Melder Zugart 65 (S-Bahn)", enum = aus_an, },
                     [0x002B] = { typ = "byte", name = "Melder Zugart Rechts (S-Bahn)", enum = aus_an, },
-                  },
+                    [0x002C] = { typ = "byte", name = "1000 Hz-Beeinflussung erfolgt", enum = boolean, },
+                    [0x002D] = { typ = "byte", name = "500 Hz-Beeinflussung erfolgt", enum = boolean, },
+                    [0x002E] = { typ = "byte", name = "2000 Hz-Beeinflussung erfolgt", enum = boolean, },
+                    [0x002F] = { typ = "byte", name = "Melder 1000 Hz", enum = aus_dauerlicht_blinkend, },
+                    [0x0030] = { typ = "byte", name = "Melder Zugart O", enum = aus_an_blinkend_invers, },
+                    [0x0031] = { typ = "byte", name = "Melder Zugart M", enum = aus_an_blinkend_invers, },
+                    [0x0032] = { typ = "byte", name = "Melder Zugart U", enum = aus_an_blinkend_invers, },
+                    [0x0033] = { typ = "byte", name = "Melder 500 Hz", enum = aus_dauerlicht_blinkend, },
+                    [0x0034] = { typ = "byte", name = "Melder Befehl", enum = aus_dauerlicht_blinkend, },
+                    [0x0035] = { typ = "byte", name = "Melder Zugart Links", enum = aus_an_blinkend_invers, },
+                    [0x0036] = { typ = "byte", name = "Melder Zugart 65", enum = aus_an_blinkend_invers, },
+                    [0x0037] = { typ = "byte", name = "Melder Zugart Rechts", enum = aus_an_blinkend_invers, },
+                    [0x0038] = { typ = "byte", name = "Melder H", enum = aus_dauerlicht_blinkend, },
+                    [0x0039] = { typ = "byte", name = "Melder E40", enum = aus_dauerlicht_blinkend, },
+                    [0x003A] = { typ = "byte", name = "Melder Ende", enum = aus_dauerlicht_blinkend, },
+                    [0x003B] = { typ = "byte", name = "Melder B", enum = aus_dauerlicht_blinkend, },
+                    [0x003C] = { typ = "byte", name = "Melder Ü", enum = aus_dauerlicht_blinkend, },
+                    [0x003D] = { typ = "byte", name = "Melder EL", enum = aus_dauerlicht_blinkend, },
+                    [0x003E] = { typ = "byte", name = "Melder V40", enum = aus_dauerlicht_blinkend, },
+                    [0x003F] = { typ = "byte", name = "Melder S", enum = aus_dauerlicht_blinkend, },
+                  }
                 },
                 [0x0004] = etcs_einstellungen_interaktionen,
                 [0x0005] = {
@@ -1446,7 +1480,7 @@ data_format = {
                   [1] = "Bremsprobemodus aktiv",
                   -- weitere Zustaende, extern aktiviert
                 }},
-                [0x0006] = { typ = "word", name = "Stellung Richtungsschalter" },
+                [0x0008] = { typ = "word", name = "Stellung Richtungsschalter" },
               },
             },
             [0x008E] = {
@@ -1483,6 +1517,12 @@ data_format = {
                     [0x0005] = { typ = "single", name = "Fahrzeughöchstgeschwindigkeit in m/s", },
                     [0x0006] = { typ = "string", name = "Baureihenangabe aus Fahrzeugdatei", },
                     [0x0007] = { typ = "string", name = "Farbgebungsangabe aus Fahrzeugdatei", },
+                    [0x0008] = { typ = "byte", name = "Traktionsmodus", enum = {
+                      [0] = "Eigener Tf",
+                      [1] = "Mehrfachtraktion",
+                      [2] = "Kalt",
+                    }},
+                    [0x0009] = { typ = "byte", name = "Stromabnehmerschaltung", },
                   },
                 },
               },
@@ -1534,6 +1574,38 @@ data_format = {
                       [1] = "Weiche läuft automatisch um",
                       [2] = "Weiche muss gestellt werden",
                     }},
+                  }
+                }
+              }
+            },
+            [0x00A9] = {
+              name = "Status Leuchtmelder für ZusiDisplay",
+              nodes = {
+                [0x0001] = {
+                  name = "Leuchtmelder mit ZusiDisplay-Integration",
+                  attributes = {
+                    [0x0001] = { typ = "string", name = "Name des Leuchtmelders", },
+                    [0x0002] = { typ = "byte", name = "Modus des Tastenrahmens", enum = {
+                      [0] = "Grafik ohne Tastenrahmen übertragen",
+                      [1] = "Grafik inkl. Tastenrahmen übertragen",
+                      [2] = "Grafik inkl. Tasten übertragen",
+                    }},
+                    [0x0003] = { typ = "word", name = "Breite der Meldergrafik in Pixeln", },
+                    [0x0004] = { typ = "word", name = "Höhe der Meldergrafik in Pixeln", },
+                  }
+                }
+              }
+            },
+            [0x00AB] = {
+              name = "Status Zug-Fahrdaten",
+              nodes = {
+                [0x0001] = {
+                  name = "Fahrzeug",
+                  attributes = {
+                    [0x0001] = { typ = "single", name = "Bremszylinderdruck in bar", },
+                    [0x0002] = { typ = "single", name = "Hauptluftleitungsdruck in bar", },
+                    [0x0003] = { typ = "single", name = "Zugkraft in N", },
+                    [0x0004] = { typ = "single", name = "Motordrehzahl in U/min", }
                   }
                 }
               }
