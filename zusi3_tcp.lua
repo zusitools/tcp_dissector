@@ -438,6 +438,12 @@ tastaturkommandos = {
   [0x7E] = "LeistungAus_Up",
   [0x7F] = "ETCSQuittieren_Down",
   [0x80] = "ETCSQuittieren_Up",
+  [0x81] = "TischAuf_Down",
+  [0x82] = "TischAuf_Up",
+  [0x83] = "TischAus_Down",
+  [0x84] = "TischAus_Up",
+  [0x85] = "SifaPruefmodus_Down",
+  [0x86] = "SifaPruefmodus_Up",
 }
 
 tastaturaktionen = {
@@ -669,6 +675,11 @@ indusi_einstellungen = {
       [2] = "Klartextmeldungen aktiv",
       [3] = "nur Klartextmeldungen möglich",
     }},
+    [0x000C] = { typ = "byte", name = "Funktionsprüfung", enum = {
+      [1] = "Funktionsprüfung starten",
+      [2] = "Funktionsprüfung OK",
+      [3] = "Funktionsprüfung nicht OK",
+    }},
   },
   nodes = {
     [0x0004] = {
@@ -715,6 +726,7 @@ indusi_einstellungen = {
           [4] = "O",
         }},
         [0x0006] = { typ = "byte", name = "Modus", enum = {
+          [0] = "undefiniert",
           [4] = "Grunddaten",
           [5] = "Ersatzzugdaten",
           [6] = "Normalbetrieb",
@@ -767,6 +779,11 @@ etcs_einstellungen_interaktionen = {
     }},
     [0x000F] = { typ = "byte", name = "Zug wurde neu übernommen", enum = boolean, },
     [0x0010] = { typ = "byte", name = "Info-Ton nötig", enum = boolean, },
+    [0x0011] = { typ = "byte", name = "Funktionsprüfung", enum = {
+      [1] = "Funktionsprüfung starten",
+      [2] = "Funktionsprüfung OK",
+      [3] = "Funktionsprüfung nicht OK",
+    }},
   },
   nodes = {
     [0x0002] = {
@@ -786,6 +803,15 @@ etcs_einstellungen_interaktionen = {
         [0x0005] = { typ = "word", name = "Achslast in kg", },
         [0x0006] = { typ = "string", name = "Zugnummer", },
         [0x0007] = { typ = "string", name = "Tf-Nummer", },
+        [0x0008] = { typ = "cardinal", name = "RBC-Nummer", },
+        [0x0009] = { typ = "string", name = "RBC-Telefonnummer", },
+        [0x000A] = { typ = "cardinal", name = "RBC-ID", },
+        [0x000B] = { typ = "cardinal", name = "RBC-Land", },
+        [0x000C] = { typ = "cardinal", name = "GSM-R-Netz (Radio Network ID)", },
+        [0x000D] = { typ = "byte", name = "GSM-R-Netz-Eingabe", enum = {
+          [0] = "durch Tf",
+          [1] = "fest im Fahrzeug hinterlegt",
+        }},
       },
     },
     [0x0004] = {
@@ -1068,6 +1094,7 @@ data_format = {
                         [0x0002] = { name = "Anzeige der Führungsgrößen", },
                         [0x0003] = { name = "B ist an, Ü ist aus", },
                         [0x0004] = { name = "Zwangsbremsung aktiv", },
+                        [0x0005] = { name = "Quittierung erwartet", },
                       },
                     },
                   },
@@ -1079,6 +1106,7 @@ data_format = {
                       [4] = "Aufforderung zur Zugdateneingabe",
                       [5] = "Normalbetrieb",
                       [6] = "Funktionsprüfung",
+                      [7] = "Funktionsprüfung: Quittierung erwartet",
                     }},
                     [0x0003] = { typ = "word", name = "Zwangsbremsung", enum = {
                       [0] = "keine Zwangsbremsung",
@@ -1097,7 +1125,7 @@ data_format = {
                       [13] = "Geschwindigkeitsüberschreitung nach LZB-Ü-Ausfall",
                       [14] = "Richtungsschalter verlegt",
                       [25] = "LZB-Rückrollüberwachung",
-                      [26] = "LZB Überschreitung 200 m nach Befehl 40",
+                      [26] = "LZB Überschreitung 200 m nach „Befehl 40 blinkt“",
                     }},
                     [0x0004] = { typ = "string", name = "Grund der Zwangsbremsung", },
                     [0x0005] = { typ = "byte", name = "Melder 1000 Hz", enum = aus_an, },
@@ -1162,18 +1190,18 @@ data_format = {
                     [0x0029] = { typ = "byte", name = "Melder Zugart Links (S-Bahn)", enum = aus_an, },
                     [0x002A] = { typ = "byte", name = "Melder Zugart 65 (S-Bahn)", enum = aus_an, },
                     [0x002B] = { typ = "byte", name = "Melder Zugart Rechts (S-Bahn)", enum = aus_an, },
-                    [0x002C] = { typ = "byte", name = "1000 Hz-Beeinflussung erfolgt", enum = boolean, },
-                    [0x002D] = { typ = "byte", name = "500 Hz-Beeinflussung erfolgt", enum = boolean, },
-                    [0x002E] = { typ = "byte", name = "2000 Hz-Beeinflussung erfolgt", enum = boolean, },
+                    [0x002C] = { typ = "byte", name = "1000-Hz-Beeinflussung erfolgt", enum = boolean, },
+                    [0x002D] = { typ = "byte", name = "500-Hz-Beeinflussung erfolgt", enum = boolean, },
+                    [0x002E] = { typ = "byte", name = "2000-Hz-Beeinflussung erfolgt", enum = boolean, },
                     [0x002F] = { typ = "byte", name = "Melder 1000 Hz", enum = aus_dauerlicht_blinkend, },
                     [0x0030] = { typ = "byte", name = "Melder Zugart O", enum = aus_an_blinkend_invers, },
                     [0x0031] = { typ = "byte", name = "Melder Zugart M", enum = aus_an_blinkend_invers, },
                     [0x0032] = { typ = "byte", name = "Melder Zugart U", enum = aus_an_blinkend_invers, },
                     [0x0033] = { typ = "byte", name = "Melder 500 Hz", enum = aus_dauerlicht_blinkend, },
                     [0x0034] = { typ = "byte", name = "Melder Befehl", enum = aus_dauerlicht_blinkend, },
-                    [0x0035] = { typ = "byte", name = "Melder Zugart Links", enum = aus_an_blinkend_invers, },
+                    [0x0035] = { typ = "byte", name = "Melder Zugart Rechts", enum = aus_an_blinkend_invers, },
                     [0x0036] = { typ = "byte", name = "Melder Zugart 65", enum = aus_an_blinkend_invers, },
-                    [0x0037] = { typ = "byte", name = "Melder Zugart Rechts", enum = aus_an_blinkend_invers, },
+                    [0x0037] = { typ = "byte", name = "Melder Zugart Links", enum = aus_an_blinkend_invers, },
                     [0x0038] = { typ = "byte", name = "Melder H", enum = aus_dauerlicht_blinkend, },
                     [0x0039] = { typ = "byte", name = "Melder E40", enum = aus_dauerlicht_blinkend, },
                     [0x003A] = { typ = "byte", name = "Melder Ende", enum = aus_dauerlicht_blinkend, },
@@ -1221,10 +1249,10 @@ data_format = {
                       [4] = "TAF abgelehnt",
                     }},
                     [0x0014] = { typ = "byte", name = "Override aktiv", enum = boolean },
-                    [0x0015] = { typ = "byte", name = "Notruf-Status", enum = {
-                      [0] = "kein Notruf",
-                      [1] = "bedingter Notruf aktiv",
-                      [2] = "unbedingter Notruf aktiv",
+                    [0x0015] = { typ = "byte", name = "Nothalt-Status", enum = {
+                      [0] = "kein Nothalt",
+                      [1] = "bedingter Nothalt aktiv",
+                      [2] = "unbedingter Nothalt aktiv",
                     }},
                     [0x0016] = { typ = "word", name = "Betriebszwangsbremsung", enum = {
                       [0] = "Keine Zwangsbremsung",
@@ -1283,7 +1311,7 @@ data_format = {
                           [1] = "Verbindung wird aufgebaut",
                           [2] = "Verbindung steht",
                           [3] = "Verbindung Neuaufbau",
-                          [4] = "Verbindung kann nicht hergestellt werden",
+                          [4] = "Verbindung Einwahlfehler",
                           [5] = "Verbindung ausgefallen",
                         }},
                       },
@@ -1296,11 +1324,44 @@ data_format = {
                           [3] = "Hauptsignal",
                           [9] = "Rangiersignal",
                           [14] = "ETCS",
+                          [17] = "Infrastrukturinfo",
                         }},
                         [0x0002] = { typ = "single", name = "Geschwindigkeit in m/s (-1: ETCS-Ende)", },
                         [0x0003] = { typ = "single", name = "Abstand in m", },
                         [0x0004] = { typ = "single", name = "Höhenwert in m", },
+                        [0x0005] = { typ = "word", name = "Parameter", enum = {
+                          [2] = "Stromabnehmer senken",
+                          [4] = "Stromabnehmer heben",
+                          [6] = "Hauptschalter aus",
+                          [8] = "Hauptschalter ein",
+                        }},
                       },
+                    },
+                    [0x0017] = {
+                      name = "ETCS-EL-Auftrag",
+                      attributes = {
+                        [0x0001] = { typ = "Byte", name = "ETCS-EL-Auftrag", enum = {
+                          [1] = "Ankündigung Hauptschalter aus",
+                          [2] = "Hauptschalter aus",
+                          [3] = "Hauptschalter ein",
+                          [8] = "Ankündigung Stromabnehmer senken",
+                          [9] = "Stromabnehmer senken",
+                          [10] = "Stromabnehmer heben",
+                        }},
+                      }
+                    },
+                    [0x0018] = {
+                      name = "ETCS-Funktionsprüfung läuft",
+                      attributes = {
+                        [0x0001] = { typ = "Byte", name = "Zustand Funktionsprüfung", enum = {
+                          [0] = "Kein besonderer Zustand",
+                          [1] = "Bremseingriff ETCS",
+                          [2] = "Sonstiger Bremseingriff",
+                          [3] = "Quittierung erwartet",
+                          [4] = "Prüfung erfolgreich",
+                          [5] = "Prüfung nicht erfolgreich",
+                        }},
+                      }
                     },
                   },
                 },
@@ -1446,6 +1507,10 @@ data_format = {
                 [0x0010] = { typ = "byte", name = "Status Melder „Zentrales Öffnen links“", enum = aus_dauerlicht_blinkend, },
                 [0x0011] = { typ = "byte", name = "Status Melder „Zentrales Öffnen rechts“", enum = aus_dauerlicht_blinkend, },
                 [0x0012] = { typ = "byte", name = "Melder „Grünschleife“", enum = aus_an, },
+                [0x0014] = { typ = "byte", name = "Türzustand", enum = {
+                  [0] = "Alle Türen zu",
+                  [1] = "Mindestens eine Tür ist offen",
+                }},
               },
             },
             [0x008D] = {
@@ -1462,6 +1527,7 @@ data_format = {
                   [1] = "Federspeicherbremse aktiv",
                   [2] = "Türsystem",
                   [3] = "Bremsprobe läuft",
+                  [4] = "Sifa ausgeschaltet",
                 }},
                 [0x0003] = { typ = "byte", name = "Status Fahrschalter", enum = {
                   [1] = "Deaktiviert",
@@ -1736,13 +1802,14 @@ data_format = {
             [0x0002] = {
               name = "Programm-Neustart (aus der laufenden Simulation)",
               attributes = {
-                [0x0001] = { typ = "string", name = "Dateiname des Zuges", },
+                [0x0001] = { typ = "string", name = "Zugnummer", },
               },
             },
             [0x0003] = {
               name = "Zug starten",
               attributes = {
-                [0x0001] = { typ = "string", name = "Dateiname des Zuges relativ zum Zusi-Verzeichnis", },
+                [0x0001] = { typ = "string", name = "Dateiname des Fahrplans relativ zum Zusi-Verzeichnis", },
+                [0x0002] = { typ = "string", name = "Zugnummer", },
               },
             },
             [0x0004] = {
@@ -1776,6 +1843,9 @@ data_format = {
                   [1] = "Zeitraffer an",
                 }},
               },
+            },
+            [0x000D] = {
+              name = "Führerstands-Blickpunkt auf Standard",
             },
           },
         },
