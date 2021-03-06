@@ -186,6 +186,8 @@ phys_quantities = {
   [0x00A9] = "Status Leuchtmelder für ZusiDisplay",
   [0x00AA] = "Außenhelligkeit",
   [0x00AB] = "Status Zug-Fahrdaten",
+  [0x00AC] = "Führerstand deaktiviert",
+  [0x00AD] = "Solldruck Hauptluftleitung",
 }
 
 aus_an = {
@@ -215,7 +217,7 @@ tastaturzuordnungen = {
   [0x00] = "Keine Tastaturbedienung",
   [0x01] = "Fahrschalter",
   [0x02] = "Dynamische Bremse",
-  [0x03] = "AFB",
+  [0x03] = "AFB/Tempomat",
   [0x04] = "Führerbremsventil",
   [0x05] = "Zusatzbremsventil",
   [0x06] = "Gang",
@@ -444,6 +446,8 @@ tastaturkommandos = {
   [0x84] = "TischAus_Up",
   [0x85] = "SifaPruefmodus_Down",
   [0x86] = "SifaPruefmodus_Up",
+  [0x87] = "SifaFusspedal_Down",
+  [0x88] = "SifaFusspedal_Up",
 }
 
 tastaturaktionen = {
@@ -745,11 +749,11 @@ etcs_einstellungen_interaktionen = {
       [2] = "Zugdaten eingegeben",
       [3] = "Start of Mission abgeschlossen",
     }},
-    [0x0005] = { typ = "byte", name = "ETCS-Störschalter", enum = {
+    [0x0005] = { typ = "byte", name = "ETCS-Passivschalter", enum = {
       [1] = "ETCS abgeschaltet",
       [2] = "ETCS eingeschaltet",
     }},
-    [0x0006] = { typ = "byte", name = "ETCS-Hauptschalter", enum = {
+    [0x0006] = { typ = "byte", name = "ETCS-Störschalter (CEA)", enum = {
       [1] = "ETCS ausgeschaltet",
       [2] = "ETCS eingeschaltet",
     }},
@@ -1589,6 +1593,7 @@ data_format = {
                       [2] = "Kalt",
                     }},
                     [0x0009] = { typ = "byte", name = "Stromabnehmerschaltung", },
+                    [0x000A] = { typ = "single", name = "Maximaler Bremszylinderdruck", },
                   },
                 },
               },
@@ -1671,7 +1676,9 @@ data_format = {
                     [0x0001] = { typ = "single", name = "Bremszylinderdruck in bar", },
                     [0x0002] = { typ = "single", name = "Hauptluftleitungsdruck in bar", },
                     [0x0003] = { typ = "single", name = "Zugkraft in N", },
-                    [0x0004] = { typ = "single", name = "Motordrehzahl in U/min", }
+                    [0x0004] = { typ = "single", name = "Motordrehzahl in U/min", },
+                    [0x0005] = { typ = "single", name = "Max. Zugkraft bei aktueller Geschwindigkeit", },
+                    [0x0006] = { typ = "single", name = "Max. dynamische Bremskraft bei aktueller Geschwindigkeit", },
                   }
                 }
               }
@@ -1733,6 +1740,7 @@ data_format = {
             }},
             [0x0004] = { typ = "string", name = "Transfer der Buchfahrplandatei", },
             [0x0005] = { typ = "byte", name = "Zug wurde neu übernommen", enum = boolean, },
+            [0x0006] = { typ = "data", name = "Transfer der Buchfahrplan-Bilddatei", },
           },
         },
         [0x010A] = {
@@ -1782,6 +1790,52 @@ data_format = {
                   [1] = "abgesperrt",
                   [2] = "offen",
                 }},
+                [0x0004] = { typ = "byte", name = "Weglängenmesser aktivieren", enum = {
+                  [1] = "Weglängenmesser aktivieren",
+                }},
+              }
+            },
+            [0x0007] = {
+              name = "Bremsprobe",
+              attributes = {
+                [0x0001] = { typ = "byte", name = "Status Bremsprobe", enum = {
+                  [0] = "Keine Bremsprobe aktiv",
+                  [1] = "Führerraumbremsprobe starten",
+                  [2] = "Teilautomatische Bremsprobe starten",
+                }},
+              }
+            },
+            [0x0008] = {
+              name = "Bremse der führenden Lok fernsteuern",
+              attributes = {
+                [0x0001] = { typ = "byte", name = "Kommando", enum = {
+                  [1] = "Fernsteuerung beginnen",
+                  [2] = "Fernsteuerung beenden",
+                }},
+                [0x0002] = { typ = "single", name = "Druck in der Hauptluftleitung vorgeben", },
+                [0x0003] = { typ = "single", name = "Druck im Bremszylinder vorgeben", },
+              }
+            },
+            [0x0009] = {
+              name = "Weiche interaktiv stellen",
+              nodes = {
+                [0x0001] = { name = "Weichen-Infopaket anfordern", },
+                [0x0002] = {
+                  name = "Weiche umstellen",
+                  attributes = {
+                    [0x0001] = { typ = "string", name = "Weichenbezeichnung", },
+                    [0x0002] = { typ = "byte", name = "Aktion", enum = {
+                      [1] = "Weiche in Grundstellung",
+                      [2] = "Weiche in Nicht-Grundstellung",
+                    }},
+                  },
+                },
+              }
+            },
+            [0x000A] = {
+              name = "Tempomat",
+              attributes = {
+                [0x0001] = { typ = "single", name = "Neuer Tempomat-Sollwert in m/s", },
               }
             },
           }
@@ -1961,6 +2015,9 @@ function build_tree(buffer, offset, tree, parent_node)
 
         elseif typ == "string" then
           descr = descr .. string.format(", value: string = \"%s\" [%s]", value:string(), tostring(value:bytes()))
+
+        elseif typ == "data" then
+          descr = descr .. string.format(", value: data = %s", tostring(value:bytes()))
 
         else
           descr = descr .. string.format(", value: ? = %s", tostring(tostring(value:bytes())))
