@@ -630,6 +630,22 @@ etcs_modus = {
   [18] = "PS",
 }
 
+etcs_grund_zwangsbremsung = {
+  [0] = "Keine Zwangsbremsung",
+  [6] = "v-Max-Überwachung",
+  [7] = "Funktionsprüfung",
+  [10] = "Rechnerausfall",
+  [11] = "ETCS-Nothalt überfahren",
+  [15] = "ETCS-Halt überfahren",
+  [16] = "ETCS: Stillstands-/Rücklaufüberwachung ausgelöst",
+  [17] = "ETCS: nicht quittiert",
+  [18] = "ETCS: Funkausfall",
+  [19] = "ETCS: Balisenstörung",
+  [20] = "ETCS: manueller Levelwechsel",
+  [27] = "Allgemeine Störung",
+  [28] = "Stromversorgung fehlt",
+}
+
 zbs_betriebszustand = {
   [0] = "undefiniert",
   [1] = "aus (Kaltstart)",
@@ -663,6 +679,18 @@ bremsstellung = {
   [8] = "E",
   [9] = "E160",
 }
+
+stromsystem = {
+  [0] = "Ohne",
+  [1] = "Unbestimmt",
+  [2] = "15 kV, 16 Hz",
+  [3] = "25 kV, 50 Hz",
+  [4] = "1500 V DC",
+  [5] = "1200 V DC Stromschiene Hamburg",
+  [6] = "3 kV DC",
+  [7] = "750 V DC Stromschiene Berlin",
+}
+
 
 indusi_einstellungen = {
   name = "System aus der Indusi-Familie - Einstellungen",
@@ -1123,7 +1151,7 @@ data_format = {
                       },
                     },
                     [0x0015] = {
-                      name = "LZB-Rechnerausfall",
+                      name = "Status nach LZB-Rechnerausfall",
                       attributes = {
                         [0x0001] = { typ = "byte", name = "Typ", enum = {
                           [1] = "Alles dunkel",
@@ -1274,21 +1302,7 @@ data_format = {
                   attributes = {
                     [0x0001] = { typ = "word", name = "Aktiver Level", enum = etcs_level, },
                     [0x0002] = { typ = "word", name = "Aktiver ETCS-Modus", enum = etcs_modus, },
-                    [0x0003] = { typ = "word", name = "Grund der Zwangs- oder Betriebszwangsbremsung", enum = {
-                      [0] = "Keine Zwangsbremsung",
-                      [6] = "v-Max-Überwachung",
-                      [7] = "Funktionsprüfung",
-                      [10] = "Rechnerausfall",
-                      [11] = "ETCS-Nothalt überfahren",
-                      [15] = "ETCS-Halt überfahren",
-                      [16] = "ETCS: Stillstands-/Rücklaufüberwachung ausgelöst",
-                      [17] = "ETCS: nicht quittiert",
-                      [18] = "ETCS: Funkausfall",
-                      [19] = "ETCS: Balisenstörung",
-                      [20] = "ETCS: manueller Levelwechsel",
-                      [27] = "Allgemeine Störung",
-                      [28] = "Stromversorgung fehlt",
-                    }},
+                    [0x0003] = { typ = "word", name = "Grund der Zwangs- oder Betriebszwangsbremsung", enum = etcs_grund_zwangsbremsung, },
                     [0x0004] = { typ = "string", name = "Grund der Zwangs- oder Betriebszwangsbremsung als Text", },
                     [0x0009] = { typ = "single", name = "Zielgeschwindigkeit in m/s (<0: dunkel)", },
                     [0x000A] = { typ = "single", name = "Zielweg in m (<0: dunkel)", },
@@ -1400,7 +1414,7 @@ data_format = {
                     [0x0017] = {
                       name = "ETCS-EL-Auftrag",
                       attributes = {
-                        [0x0001] = { typ = "Byte", name = "ETCS-EL-Auftrag", enum = {
+                        [0x0001] = { typ = "byte", name = "ETCS-EL-Auftrag", enum = {
                           [1] = "Ankündigung Hauptschalter aus",
                           [2] = "Hauptschalter aus",
                           [3] = "Hauptschalter ein",
@@ -1413,7 +1427,7 @@ data_format = {
                     [0x0018] = {
                       name = "ETCS-Funktionsprüfung läuft",
                       attributes = {
-                        [0x0001] = { typ = "Byte", name = "Zustand Funktionsprüfung", enum = {
+                        [0x0001] = { typ = "byte", name = "Zustand Funktionsprüfung", enum = {
                           [0] = "Kein besonderer Zustand",
                           [1] = "Bremseingriff ETCS",
                           [2] = "Sonstiger Bremseingriff",
@@ -1423,16 +1437,23 @@ data_format = {
                         }},
                       }
                     },
-                    [0x0018] = {
+                    [0x0019] = {
                       name = "Bootvorgang ETCS-Gerät läuft",
                       attributes = {
-                        [0x0001] = { typ = "Byte", name = "Zustand Bootvorgang", enum = {
+                        [0x0001] = { typ = "byte", name = "Zustand Bootvorgang", enum = {
                           [1] = "Start, Modus SF, HL entlüftet",
                           [2] = "Display erlischt weitgehend",
                           [3] = "HL füllt, Modus SB, Selbsttest beginnt",
                           [4] = "Selbsttest OK",
                           [5] = "STM werden gefunden",
                         }},
+                      }
+                    },
+                    [0x001A] = {
+                      name = "ETCS-Textmeldung",
+                      attributes = {
+                        [0x0001] = { typ = "byte", name = "Grund für Zwangsbremsung", enum = etcs_grund_zwangsbremsung, },
+                        [0x0002] = { typ = "string", name = "Freier Meldungstext", },
                       }
                     },
                   },
@@ -1649,11 +1670,47 @@ data_format = {
                         [0x0003] = { typ = "byte", name = "Bremsstellung wirksam", enum = boolean },
                       },
                     },
+                    [0x0023] = {
+                      name = "In der Lok vorhandenes Türschließsystem",
+                      attributes = {
+                        [0x0001] = { typ = "string", name = "Bezeichnung", },
+                      },
+                    },
+                    [0x0025] = {
+                      name = "Antriebssystem",
+                      attributes = {
+                        [0x0001] = { typ = "byte", name = "Typ", enum = {
+                          [0] = "Unbestimmt",
+                          [1] = "Einfaches Antriebsmodell",
+                          [2] = "Dieselelektrisch (Drehstrom)",
+                          [3] = "Dieselelektrisch (Gleichstrom)",
+                          [4] = "Dieselhydraulisch",
+                          [5] = "Dieselmechanisch",
+                          [6] = "Elektrisch (Drehstrom)",
+                          [7] = "Elektrisch (Reihenschluss)",
+                        }},
+                        [0x0002] = { typ = "byte", name = "Stromtyp", enum = stromsystem, },
+                        [0x0003] = { typ = "byte", name = "Aktiv", enum = boolean, },
+                      },
+                    },
+                    [0x0026] = {
+                      name = "Dynamisches Bremssysteme",
+                      attributes = {
+                        [0x0001] = { typ = "byte", name = "Typ", enum = {
+                          [0] = "Unbestimmt",
+                          [1] = "Elektrisch (Drehstrom)",
+                          [2] = "Elektrisch (Reihenschluss)",
+                          [3] = "Retarder",
+                        }},
+                        [0x0002] = { typ = "byte", name = "Stromtyp", enum = stromsystem, },
+                        [0x0003] = { typ = "byte", name = "Aktiv", enum = boolean, },
+                      },
+                    },
                   },
                   attributes = {
                     [0x0001] = { typ = "string", name = "Fahrzeugdateiname", },
                     [0x0002] = { typ = "string", name = "Beschreibung", },
-                    [0x0003] = { typ = "word", name = "Vorgabe Bremsstellung", enum = bremsstellung },
+                    [0x0003] = { typ = "word", name = "Vorgabe Bremsstellung", enum = bremsstellung, },
                     [0x0005] = { typ = "single", name = "Fahrzeughöchstgeschwindigkeit in m/s", },
                     [0x0006] = { typ = "string", name = "Baureihenangabe aus Fahrzeugdatei", },
                     [0x0007] = { typ = "string", name = "Farbgebungsangabe aus Fahrzeugdatei", },
@@ -1664,7 +1721,7 @@ data_format = {
                     }},
                     [0x0009] = { typ = "byte", name = "Stromabnehmerschaltung", },
                     [0x000A] = { typ = "single", name = "Maximaler Bremszylinderdruck", },
-                    [0x000B] = { typ = "string", name = "NVR-Nummer", },
+                    [0x000B] = { typ = "string", name = "NVR-Nummer oder historische Fahrzeugnummer", },
                     [0x000C] = { typ = "word", name = "Anzahl Sitzplätze 1. Klasse", },
                     [0x000D] = { typ = "word", name = "Anzahl Sitzplätze 2. Klasse", },
                     [0x000E] = { typ = "byte", name = "Fahrzeug gedreht eingereiht", enum = boolean, },
@@ -1714,6 +1771,12 @@ data_format = {
                       [2] = "Fahrzeug ist keine Lokomotive",
                     }},
                     [0x0021] = { typ = "string", name = "Interne Fahrzeugnummer", },
+                    [0x0022] = { typ = "string", name = "Gefahrgutkennzeichen", },
+                    [0x0024] = { typ = "byte", name = "Bauart Türsystem-Wahlschalter", enum = {
+                      [0] = "Keiner",
+                      [1] = "Drehtaster",
+                    }},
+                    [0x0027] = { typ = "byte", name = "Automatisch lastabhängige Bremse", enum = boolean, },
                   },
                 },
               },
@@ -1796,9 +1859,17 @@ data_format = {
                     [0x0001] = { typ = "single", name = "Bremszylinderdruck in bar", },
                     [0x0002] = { typ = "single", name = "Hauptluftleitungsdruck in bar", },
                     [0x0003] = { typ = "single", name = "Zugkraft in N", },
-                    [0x0004] = { typ = "single", name = "Motordrehzahl in U/min", },
+                    [0x0004] = { typ = "single", name = "Motordrehzahl Ⅰ in U/min", },
                     [0x0005] = { typ = "single", name = "Max. Zugkraft bei aktueller Geschwindigkeit", },
                     [0x0006] = { typ = "single", name = "Max. dynamische Bremskraft bei aktueller Geschwindigkeit", },
+                    [0x0007] = { typ = "byte", name = "Absperrhähne Hauptluftleitung", enum = {
+                      [0] = "Nur an den Zugenden geschlossen)",
+                      [1] = "Hahn vorne geöffnet",
+                      [2] = "Hahn hinten geöffnet",
+                      [3] = "Beide Hähne geöffnet",
+                      [4] = "Beide Hähne zu",
+                    }},
+                    [0x000A] = { typ = "single", name = "Motordrehzahl Ⅱ in U/min", },
                   }
                 }
               }
@@ -1858,9 +1929,15 @@ data_format = {
             [0x0003] = { typ = "byte", name = "Status Ladepause", enum = {
               [0] = "Ende Ladepause (Start der Simulation)",
             }},
-            [0x0004] = { typ = "string", name = "Transfer der Buchfahrplandatei", },
+            [0x0004] = { typ = "string", name = "Transfer der Buchfahrplan-Rohdatei (xml)", },
             [0x0005] = { typ = "byte", name = "Zug wurde neu übernommen", enum = boolean, },
-            [0x0006] = { typ = "data", name = "Transfer der Buchfahrplan-Bilddatei", },
+            [0x0006] = { typ = "data", name = "Transfer des Buchfahrplans (Bilddatei)", },
+            [0x0007] = { typ = "data", name = "Transfer des Buchfahrplans (pdf)", },
+            [0x0008] = { typ = "data", name = "Transfer des Bremszettels (pdf)", },
+            [0x0009] = { typ = "data", name = "Transfer der Wagenliste (pdf)", },
+            [0x000A] = { typ = "data", name = "Transfer der La (pdf)", },
+            [0x000B] = { typ = "data", name = "Transfer des Streckenbuchs (pdf)", },
+            [0x000C] = { typ = "data", name = "Transfer der Ersatzfahrpläne (pdf)", },
           },
         },
         [0x010A] = {
@@ -1976,9 +2053,32 @@ data_format = {
               attributes = {
                 [0x0001] = { typ = "word", name = "Index des Fahrzeuges im Zugverband", },
                 [0x0002] = { typ = "byte", name = "Bremsstellung", enum = bremsstellung, },
+                [0x0003] = { typ = "byte", name = "Indirekte Bremse abziehen", },
+                [0x0004] = { typ = "byte", name = "Absperrhähne Hauptluftleitung setzen", enum = {
+                  [0] = "Nur an den Zugenden geschlossen",
+                  [1] = "Hahn vorne geöffnet",
+                  [2] = "Hahn hinten geöffnet",
+                  [3] = "Beide Hähne geöffnet",
+                  [4] = "Beide Hähne zu",
+                  [5] = "Auf Default setzen",
+                }},
               }
             },
-          }
+          },
+          attributes = {
+            [0x000D] = { typ = "data", name = "Transfer des Bremszettels (pdf)", },
+            [0x000E] = { typ = "data", name = "Transfer der Wagenliste (pdf)", },
+            [0x000F] = { typ = "data", name = "Transfer der La (pdf)", },
+            [0x0010] = { typ = "data", name = "Transfer des Streckenbuchs (pdf)", },
+            [0x0011] = { typ = "data", name = "Transfer der Ersatzfahrpläne (pdf)", },
+            [0x0012] = { typ = "smallint", name = "Index des einzustellenden Türsystems (0=kein Türsystem)", },
+            [0x0013] = { typ = "smallint", name = "Index des zu deaktivierenden Antriebs", },
+            [0x0014] = { typ = "smallint", name = "Index des zu aktivierenden Antriebs", },
+            [0x0015] = { typ = "smallint", name = "Index des zu deaktivierenden dynamischen Bremssystems", },
+            [0x0016] = { typ = "smallint", name = "Index des zu aktivierenden dynamischen Bremssystems", },
+            [0x0017] = { typ = "smallint", name = "Index des zu deaktivierenden Zugbeeinflussungssystems", },
+            [0x0018] = { typ = "smallint", name = "Index des zu aktivierenden Zugbeeinflussungssystems", },
+          },
         },
         [0x010B] = {
           name = "Befehl CONTROL",
