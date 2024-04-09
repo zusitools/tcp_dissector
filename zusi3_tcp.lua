@@ -1226,8 +1226,8 @@ data_format = {
                     [0x0008] = { typ = "byte", name = "Zugartmelder O", enum = aus_an, },
                     [0x0009] = { typ = "byte", name = "Indusi-Hupe", enum = {
                       [0] = "aus",
-                      [1] = "Hupe",
-                      [2] = "Zwangsbemsung",
+                      [1] = "Zwangsbemsung",
+                      [2] = "Hupe",
                     }},
                     [0x000A] = { typ = "byte", name = "Melder 500Hz", enum = aus_an },
                     [0x000B] = { typ = "byte", name = "Melder Befehl", enum = aus_an },
