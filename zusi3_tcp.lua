@@ -1788,7 +1788,7 @@ data_format = {
                   [0] = "Güterzug",
                   [1] = "Reisezug",
                 }},
-                [0x0002] = { typ = "word", name = "Bremsstellung Zug", enum = bremsstellung, },
+                [0x0003] = { typ = "word", name = "Bremsstellung Zug", enum = bremsstellung, },
               },
               nodes = {
                 [0x0001] = {
@@ -2149,7 +2149,7 @@ data_format = {
                   name = "Nächstes Hauptsignal",
                   attributes = {
                     [0x0001] = { typ = "single", name = "Abstand [m]", },
-                    [0x0001] = { typ = "single", name = "Zulässige Geschwindigkeit [m/s]", },
+                    [0x0002] = { typ = "single", name = "Zulässige Geschwindigkeit [m/s]", },
                   },
                 },
               },
