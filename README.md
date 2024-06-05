@@ -1,6 +1,8 @@
 # tcp_dissector
 Wireshark dissector for the Zusi 3 TCP protocol
 
+**The Zusi 3 TCP protocol regularly changes in backwards-incompatible ways (e.g. by redefining IDs with a different data type). Be sure to use a version of the dissector that matches your Zusi version.**
+
 [Installation instructions](http://web.archive.org/web/20170606173544/https://delog.wordpress.com/2010/09/27/create-a-wireshark-dissector-in-lua/)
 
 1. Edit and save the zusi3_tcp.lua script above to any folder (e.g. C:\Program Files (x86)\Zusi3\_Tools)

@@ -610,6 +610,16 @@ kombischalterfunktionen = {
   [0x85] = "Fahrzeugintern 20",
 }
 
+etcs_baseline = {
+  [0] = "Unbeschränkte Kompatibilität",
+  [1] = "Display hat kein ETCS",
+  [2] = "2.2.2",
+  [3] = "2.3.0d",
+  [4] = "3.4.0",
+  [5] = "3.6.0",
+  [6] = "4.0.0",
+}
+
 etcs_level = {
   [0] = "ETCS Level undefiniert",
   [1] = "ETCS Level STM",
@@ -689,6 +699,7 @@ bremsstellung = {
   [7] = "H",
   [8] = "E",
   [9] = "E160",
+  [10] = "R rot",
 }
 
 normalzustand_abgesperrt = {
@@ -714,6 +725,15 @@ stromsystem = {
   [8] = "Bordsystem (Stromerzeugung im Fahrzeug)",
 }
 
+tuerzustand = {
+  [0] = "zu",
+  [1] = "öffnend",
+  [2] = "offen",
+  [3] = "Fahrgastwechsel abgeschlossen",
+  [4] = "schließend",
+  [5] = "gestört",
+  [6] = "blockiert",
+}
 
 indusi_einstellungen = {
   name = "System aus der Indusi-Familie - Einstellungen",
@@ -871,7 +891,7 @@ etcs_einstellungen_interaktionen = {
       [2] = "Funktionsprüfung OK",
       [3] = "Funktionsprüfung nicht OK",
     }},
-    [0x0012] = { typ = "string", name = "Max. verfügbare Baseline des EVC", },
+    [0x0012] = { typ = "byte", name = "Baseline des EVC", enum = etcs_baseline, },
     [0x0013] = { typ = "byte", name = "Fahrzeug hat ETCS-LSS", enum = boolean, },
     [0x0014] = { typ = "byte", name = "Fahrzeug hat Passivschalter", enum = boolean, },
     [0x0015] = { typ = "byte", name = "Fahrzeug hat ETCS-Reset-Schalter", enum = boolean, },
@@ -1362,7 +1382,10 @@ data_format = {
                       [3] = "TAF quittiert",
                       [4] = "TAF abgelehnt",
                     }},
-                    [0x0014] = { typ = "byte", name = "Override aktiv", enum = boolean },
+                    [0x0014] = { typ = "byte", name = "Override aktiv", enum = {
+                      [1] = "Override aktiv",
+                      [2] = "Override verdeckt aktiv",
+                    }},
                     [0x0015] = { typ = "byte", name = "Nothalt-Status", enum = {
                       [0] = "kein Nothalt",
                       [1] = "bedingter Nothalt aktiv",
@@ -1381,6 +1404,7 @@ data_format = {
                       [19] = "ETCS: Balisenstörung",
                       [20] = "ETCS: manueller Levelwechsel",
                     }},
+                    [0x001D] = { typ = "byte", name = "ETCS-Baseline der Strecke", enum = etcs_baseline, },
                   },
                   nodes = {
                     [0x0005] = {
@@ -1451,6 +1475,7 @@ data_format = {
                           [6] = "Hauptschalter aus",
                           [8] = "Hauptschalter ein",
                         }},
+                        [0x0006] = { typ = "single", name = "Neigung [‰]", },
                       },
                     },
                     [0x0017] = {
@@ -1500,7 +1525,10 @@ data_format = {
                         [0x0004] = { typ = "string", name = "Meldungstyp gemäß ETCS-Spezifikation", },
                         [0x0005] = { typ = "string", name = "Meldungstext", },
                         [0x0006] = { typ = "string", name = "Parameterwert", },
-                        [0x0007] = { typ = "byte", name = "Quittierpflichtige Meldung", enum = boolean },
+                        [0x0007] = { typ = "byte", name = "Quittierpflichtige Meldung", enum = {
+                          [0] = "Meldung muss nicht (mehr) quittiert werden",
+                          [1] = "Quittierpflichtige Meldung",
+                        }},
                       },
                     },
                     [0x001B] = {
@@ -1518,6 +1546,15 @@ data_format = {
                       name = "ETCS-Balise befahren",
                       attributes = {
                         [0x0001] = { typ = "string", name = "Balisenkennung", },
+                      },
+                    },
+                    [0x001E] = {
+                      name = "ETCS-NBÜ-Abschnitt",
+                      attributes = {
+                        [0x0001] = { typ = "byte", name = "NBÜ-Abschnitt-Typ", enum = {
+                          [0] = "Ankündigung NBÜ-Abschnitt",
+                          [1] = "NBÜ-Abschnitt",
+                        }},
                       },
                     },
                   },
@@ -1612,30 +1649,26 @@ data_format = {
                     [0x0004] = { typ = "cardinal", name = "Zählerstand ungewollte Vorbeifahrt", },
                   },
                 },
+                [0x000C] = {
+                  name = "System SCMT - Einstellungen und Interaktionen",
+                  attributes = {
+                    [0x0001] = { typ = "byte", name = "Pneumatische Platte", enum = {
+                      [0] = "abgeschaltet",
+                      [1] = "eingeschaltet",
+                    }},
+                  },
+                },
+                [0x000D] = {
+                  name = "System SCMT - Betriebsdaten",
+                },
               },
             },
             [0x0066] = {
               name = "Status Türsystem",
               attributes = {
                 [0x0001] = { typ = "string", name = "Bezeichnung des Systems als Text", },
-                [0x0002] = { typ = "byte", name = "Status linke Seite", enum = {
-                  [0] = "zu",
-                  [1] = "öffnend",
-                  [2] = "offen",
-                  [3] = "Fahrgastwechsel abgeschlossen",
-                  [4] = "schließend",
-                  [5] = "gestört",
-                  [6] = "blockiert",
-                }},
-                [0x0003] = { typ = "byte", name = "Status rechte Seite", enum = {
-                  [0] = "zu",
-                  [1] = "öffnend",
-                  [2] = "offen",
-                  [3] = "Fahrgastwechsel abgeschlossen",
-                  [4] = "schließend",
-                  [5] = "gestört",
-                  [6] = "blockiert",
-                }},
+                [0x0002] = { typ = "byte", name = "Status linke Seite", enum = tuerzustand, },
+                [0x0003] = { typ = "byte", name = "Status rechte Seite", enum = tuerzustand, },
                 [0x0004] = { typ = "byte", name = "Traktionssperre", enum = {
                   [1] = "Traktionssperre aktiv",
                 }},
@@ -1716,7 +1749,37 @@ data_format = {
                   [0] = "Aus",
                   [1] = "Arbeitet",
                 }},
+                [0x000C] = { typ = "byte", name = "Spitzenlicht-Zustand", enum = {
+                  [0] = "An",
+                  [1] = "Aus",
+                  [2] = "An+Fernlicht",
+                  [3] = "An+Fernlicht hell",
+                }},
               },
+              nodes = {
+                [0x000B] = {
+                  name = "Störungsmeldungen",
+                  nodes = {
+                    [0x0001] = {
+                      name = "Störungsmeldung",
+                      attributes = {
+                        [0x0001] = { typ = "cardinal", name = "Laufende Nummer", },
+                        [0x0002] = { typ = "byte", name = "Priorität", enum = {
+                          [0] = "hoch",
+                          [1] = "mittel",
+                          [2] = "niedrig",
+                          [3] = "niedrig ohne akustische Ausgabe",
+                        }},
+                        [0x0003] = { typ = "string", name = "Text", },
+                        [0x0004] = { typ = "word", name = "Meldungstyp (Zusi-intern)", },
+                        [0x0005] = { typ = "byte", name = "Quittiert", enum = boolean },
+                        [0x0006] = { typ = "double", name = "Zeitpunkt", },
+                        [0x0007] = { typ = "string", name = "Client-intern", },
+                      },
+                    },
+                  },
+                },
+              }
             },
             [0x008E] = {
               name = "Status Zug",
@@ -1767,6 +1830,7 @@ data_format = {
                         [0x0002] = { typ = "byte", name = "Stromtyp", enum = stromsystem, },
                         [0x0003] = { typ = "byte", name = "Aktiv", enum = boolean, },
                         [0x0004] = { typ = "single", name = "Max. Kraft [N]" },
+                        [0x0005] = { typ = "byte", name = "Antrieb gesperrt", enum = boolean, },
                       },
                     },
                     [0x0026] = {
@@ -1898,6 +1962,20 @@ data_format = {
                       [0] = "leer",
                       [1] = "beladen",
                     }},
+                    [0x003E] = { typ = "byte", name = "Zustand Schalter Nachbremsung", enum = {
+                      [1] = "aus - Fahrzeug hat Schalter",
+                      [2] = "nachbremsen - Fahrzeug hat Schalter",
+                      [3] = "aus - per Display einzustellen",
+                      [4] = "nachbremsen - per Display einzustellen",
+                    }},
+                    [0x003F] = { typ = "single", name = "Maximale Zuladung", },
+                    [0x0040] = { typ = "byte", name = "Hauptschaltersperrung", enum = {
+                      [1] = "Hauptschalter gesperrt",
+                      [2] = "Hauptschalter nicht gesperrt",
+                    }},
+                    [0x0041] = { typ = "byte", name = "Luftfederabsperrhähne [bitweise kodiert, 1=abgesperrt]", },
+                    [0x0042] = { typ = "byte", name = "Anzahl Luftfederabsperrhähne", },
+                    [0x0043] = { typ = "byte", name = "Anzahl Türen", },
                   },
                 },
               },
@@ -1925,6 +2003,8 @@ data_format = {
                       [12] = "UT",
                       [13] = "ZLB",
                       [14] = "Wärterhaltscheibe",
+                      [15] = "Wegverzweigung rechts",
+                      [16] = "Wegverzweigung links",
                     }},
                     [0x0003] = { typ = "int", name = "Typ", enum = {
                       [0] = "undefiniert",
@@ -2005,6 +2085,20 @@ data_format = {
                         [0x0007] = { typ = "single", name = "Oberstrom [A]", },
                       },
                     },
+                    [0x0015] = {
+                      name = "Türen",
+                      attributes = {
+                        [0x0001] = { typ = "byte", name = "Türzustand rechts Tür A", enum = tuerzustand, },
+                        [0x0002] = { typ = "byte", name = "Türzustand rechts Tür B", enum = tuerzustand, },
+                        [0x0003] = { typ = "byte", name = "Türzustand rechts Tür C", enum = tuerzustand, },
+                        [0x0004] = { typ = "byte", name = "Türzustand rechts Tür D", enum = tuerzustand, },
+                        [0x0005] = { typ = "byte", name = "Türzustand links Tür A", enum = tuerzustand, },
+                        [0x0006] = { typ = "byte", name = "Türzustand links Tür B", enum = tuerzustand, },
+                        [0x0007] = { typ = "byte", name = "Türzustand links Tür C", enum = tuerzustand, },
+                        [0x0008] = { typ = "byte", name = "Türzustand links Tür D", enum = tuerzustand, },
+                        [0x0009] = { typ = "byte", name = "Tür abgesperrt [bitweise kodiert]", },
+                      },
+                    },
                   },
                   attributes = {
                     [0x0001] = { typ = "single", name = "Bremszylinderdruck [bar]", },
@@ -2038,8 +2132,12 @@ data_format = {
                       [1] = "gelöst",
                       [2] = "angelegt",
                     }},
-                    [0x0010] = { typ = "byte", name = "Zustand Mg-Bremsen-Manipulation [bitweise codiert]", },
+                    [0x0010] = { typ = "byte", name = "Zustand Mg-Bremsen-Manipulation [bitweise kodiert]", },
                     [0x0011] = { typ = "single", name = "Bremskraft Druckluftbremse [N]", },
+                    [0x0012] = { typ = "smallint", name = "Oberstrombegrenzung [A]", },
+                    [0x0013] = { typ = "byte", name = "Fahrzeug regelt Oberstrombegrenzung  automatisch", enum = boolean, },
+                    [0x0014] = { typ = "byte", name = "Stromabnehmerstellung [bitweise kodiert]", },
+                    [0x0016] = { typ = "byte", name = "Hauptschalter aus", enum = boolean },
                   },
                 },
               },
@@ -2228,15 +2326,20 @@ data_format = {
               }
             },
             [0x000B] = {
-              name = "Stromabnehmerwahl",
+              name = "Antriebe/Stromabnehmerwahl/Hauptschalter",
               attributes = {
                 [0x0001] = { typ = "word", name = "Index des Fahrzeuges im Zugverband", },
-                [0x0002] = { typ = "byte", name = "Stromabnehmerwahl", },
-                [0x0003] = { typ = "byte", name = "Stromabnehmer-Absperrhähne", },
+                [0x0002] = { typ = "byte", name = "Stromabnehmerwahl [bitweise kodiert]", },
+                [0x0003] = { typ = "byte", name = "Hauptschalter sperren", enum = {
+                  [1] = "Hauptschalter gesperrt",
+                  [2] = "Hauptschalter entsperrt",
+                }},
+                [0x0004] = { typ = "byte", name = "Antrieb Nr. sperren", },
+                [0x0005] = { typ = "byte", name = "Antrieb Nr. entsperren", },
               }
             },
             [0x000C] = {
-              name = "Bremsstellung setzen",
+              name = "Bremse und Umgebung",
               attributes = {
                 [0x0001] = { typ = "word", name = "Index des Fahrzeuges im Zugverband", },
                 [0x0002] = { typ = "byte", name = "Bremsstellung", enum = bremsstellung, },
@@ -2279,7 +2382,30 @@ data_format = {
                   [1] = "leer",
                   [2] = "beladen",
                 }},
+                [0x000F] = { typ = "byte", name = "Nachbremsung setzen", enum = {
+                  [1] = "aus",
+                  [2] = "an",
+                }},
+                [0x0010] = { typ = "byte", name = "Luftfederabsperrhähne setzen [bitweise kodiert, 1=abgesperrt]", },
+                [0x0011] = { typ = "byte", name = "Dynamische Bremse Nr. sperren", },
+                [0x0012] = { typ = "byte", name = "Dynamische Bremse Nr. entsperren", },
               }
+            },
+            [0x001A] = {
+              name = "Störungsmeldung",
+              attributes = {
+                [0x0001] = { typ = "byte", name = "Priorität", },
+                [0x0002] = { typ = "string", name = "Text der Meldung", },
+                [0x0003] = { typ = "word", name = "Kennung", },
+                [0x0004] = { typ = "string", name = "Client-Intern", },
+              },
+            },
+            [0x001E] = {
+              name = "Weitere Fahrzeugsysteme",
+              attributes = {
+                [0x0001] = { typ = "word", name = "Index Fahrzeug im Zugverband", },
+                [0x0002] = { typ = "byte", name = "Zustand Türabsperrung [bitweise kodiert]", },
+              },
             },
           },
           attributes = {
@@ -2298,6 +2424,9 @@ data_format = {
             [0x0017] = { typ = "smallint", name = "Index des zu deaktivierenden Zugbeeinflussungssystems", },
             [0x0018] = { typ = "smallint", name = "Index des zu aktivierenden Zugbeeinflussungssystems", },
             [0x0019] = { typ = "single", name = "Brh setzen", },
+            [0x001B] = { typ = "cardinal", name = "Störungsmeldung Nr. quittieren", },
+            [0x001C] = { typ = "cardinal", name = "Störungsmeldung Nr. beenden", },
+            [0x001D] = { typ = "smallint", name = "Oberstrombegrenzung setzen", },
           },
         },
         [0x010B] = {
