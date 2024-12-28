@@ -735,6 +735,33 @@ tuerzustand = {
   [6] = "blockiert",
 }
 
+traktionssperre = {
+  [0] = "Nichts",
+  [1] = "Federspeicher",
+  [2] = "Türsystem",
+  [3] = "Bremsprobe",
+  [4] = "Sifa-Hauptschalter",
+  [5] = "Fahrschalter verlegt beim Aufschließen",
+  [6] = "Richtungsschalter verlegt beim Aufschließen",
+  [7] = "Kein Antrieb verfügbar",
+  [8] = "Keine Richtung eingelegt",
+  [9] = "vMax-Überschreitung",
+  [10] = "Betriebsbremsung wegen vMax-Überschreitung",
+  [11] = "Fahrschalter beim Verlegen nicht quittiert",
+  [12] = "Abschaltung Tempomat/AFB",
+  [13] = "Sifa-Zwangsbremsung",
+  [14] = "Dynamische Bremse aktiv",
+  [15] = "HBL-Druck zu niedrig",
+  [16] = "HL-Druck zu niedrig",
+  [17] = "Nicht ausreichendes Bremsvermögen",
+  [18] = "Mg-Bremse aktiv",
+  [19] = "Zylinderdruck zu hoch",
+  [20] = "Notaus betätigt",
+  [21] = "Hauptschalter nicht eingeschaltet",
+  [22] = "Keine Oberspannung",
+  [23] = "Nullstellungszwang",
+}
+
 indusi_einstellungen = {
   name = "System aus der Indusi-Familie - Einstellungen",
   attributes = {
@@ -1474,6 +1501,8 @@ data_format = {
                           [4] = "Stromabnehmer heben",
                           [6] = "Hauptschalter aus",
                           [8] = "Hauptschalter ein",
+                          [10] = "Anfang NBÜ-Abschnitt",
+                          [12] = "Ende NBÜ-Abschnitt",
                         }},
                         [0x0006] = { typ = "single", name = "Neigung [‰]", },
                       },
@@ -1552,8 +1581,9 @@ data_format = {
                       name = "ETCS-NBÜ-Abschnitt",
                       attributes = {
                         [0x0001] = { typ = "byte", name = "NBÜ-Abschnitt-Typ", enum = {
-                          [0] = "Ankündigung NBÜ-Abschnitt",
-                          [1] = "NBÜ-Abschnitt",
+                          [0] = "NBÜ-Abschnitt außerhalb Bremskurve",
+                          [1] = "Ankündigung NBÜ-Abschnitt",
+                          [2] = "NBÜ-Abschnitt",
                         }},
                       },
                     },
@@ -1715,13 +1745,7 @@ data_format = {
                   [2] = "Dynamische Bremse",
                   [3] = "Traktionssperre",
                 }},
-                [0x0002] = { typ = "word", name = "Grund Traktionssperre", enum = {
-                  [0] = "Nichts",
-                  [1] = "Federspeicherbremse aktiv",
-                  [2] = "Türsystem",
-                  [3] = "Bremsprobe läuft",
-                  [4] = "Sifa ausgeschaltet",
-                }},
+                [0x0002] = { typ = "word", name = "Erste wirksame Traktionssperre", enum = traktionssperre, },
                 [0x0003] = { typ = "byte", name = "Status Fahrschalter", enum = {
                   [1] = "Deaktiviert",
                   [2] = "Normalzustand",
@@ -1755,6 +1779,9 @@ data_format = {
                   [2] = "An+Fernlicht",
                   [3] = "An+Fernlicht hell",
                 }},
+                [0x000D] = { typ = "byte", name = "Sanden unter Vorgabegeschwindigkeit", enum = boolean, },
+                [0x000E] = { typ = "byte", name = "Sander im Testmodus", enum = boolean, },
+                [0x000F] = { typ = "byte", name = "Sander im Automatikmodus", enum = boolean, },
               },
               nodes = {
                 [0x000B] = {
@@ -1778,6 +1805,12 @@ data_format = {
                       },
                     },
                   },
+                },
+                [0x0010] = {
+                  name = "Traktionssperre",
+                  attributes = {
+                    [0x0001] = { typ = "word", name = "Grund", enum = traktionssperre, },
+                  }
                 },
               }
             },
@@ -1885,7 +1918,7 @@ data_format = {
                       [5] = "Matrossow-Bremse",
                       [6] = "Scheibenbremse mit Symbol für „ausgeschaltet“",
                     }},
-                    [0x0015] = { typ = "single", name = "Bremsmasse Hand-/Feststellbremse", },
+                    [0x0015] = { typ = "single", name = "Bremsmasse Feststellbremse", },
                     [0x0016] = { typ = "single", name = "Aktive Bremsmasse", },
                     [0x0017] = { typ = "single", name = "Aktive Bremsmasse inkl. dyn. Bremsen", },
                     [0x0018] = { typ = "word", name = "Anzahl Achsen", },
@@ -1947,7 +1980,7 @@ data_format = {
                     [0x0035] = { typ = "word", name = "Türsystemwahlschalter: Nummer aktives Türsystem", enum = {
                       [0] = "Aus",
                     }},
-                    [0x0036] = { typ = "single", name = "Bremskraft Hand-/Feststellbremse", },
+                    [0x0036] = { typ = "single", name = "Bremskraft Feststellbremse", },
                     [0x0037] = { typ = "int", name = "Haupt-ID der Fahrzeugvariante", },
                     [0x0038] = { typ = "int", name = "Neben-ID der Fahrzeugvariante", },
                     [0x0039] = { typ = "string", name = "Name Führerstandsdatei", },
@@ -1976,6 +2009,7 @@ data_format = {
                     [0x0041] = { typ = "byte", name = "Luftfederabsperrhähne [bitweise kodiert, 1=abgesperrt]", },
                     [0x0042] = { typ = "byte", name = "Anzahl Luftfederabsperrhähne", },
                     [0x0043] = { typ = "byte", name = "Anzahl Türen", },
+                    [0x0044] = { typ = "single", name = "Max. Bremsgewicht lastabhängige Bremse", },
                   },
                 },
               },
@@ -2128,7 +2162,7 @@ data_format = {
                       [3] = "Magnet oben, bestromt",
                       [4] = "Magnet unten, bestromt",
                     }},
-                    [0x000F] = { typ = "byte", name = "Zustand Feststell-/Handbremse", enum = {
+                    [0x000F] = { typ = "byte", name = "Zustand Feststellbremse", enum = {
                       [1] = "gelöst",
                       [2] = "angelegt",
                     }},
@@ -2218,6 +2252,7 @@ data_format = {
             [0x000A] = { typ = "data", name = "Transfer der La (pdf)", },
             [0x000B] = { typ = "data", name = "Transfer des Streckenbuchs (pdf)", },
             [0x000C] = { typ = "data", name = "Transfer der Ersatzfahrpläne (pdf)", },
+            [0x000D] = { typ = "data", name = "Transfer Fahrplaninfo-Datei", },
           },
         },
         [0x010A] = {
@@ -2405,6 +2440,10 @@ data_format = {
               attributes = {
                 [0x0001] = { typ = "word", name = "Index Fahrzeug im Zugverband", },
                 [0x0002] = { typ = "byte", name = "Zustand Türabsperrung [bitweise kodiert]", },
+                [0x0003] = { typ = "byte", name = "Prüfmodus Sander", enum = {
+                  [0] = "Prüfmodus",
+                  [1] = "Normalbetrieb",
+                }},
               },
             },
           },
