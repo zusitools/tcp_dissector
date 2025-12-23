@@ -13,6 +13,17 @@
 
 zusi3_proto = Proto("zusi3_tcp", "Zusi 3 TCP")
 
+-- https://forum.zusi.de/viewtopic.php?t=20379
+function incrementKeys(originalDict)
+  local transformedDict = {}
+
+  for key, value in pairs(originalDict) do
+      transformedDict[key + 1] = value
+  end
+
+  return transformedDict
+end
+
 phys_quantities = {
   [0x0000] = "keine Funktion",
   [0x0001] = "Geschwindigkeit [m/s]",
@@ -852,6 +863,27 @@ traktionsmodus = {
   [1] = "Fahrzeug ist Bestandteil einer Mehrfachtraktion",
   [2] = "Fahrzeug läuft mit abgeschaltetem Antrieb (abgerüstet)",
   [3] = "Fahrzeug ist aufgerüstet abgestellt",
+}
+
+status_akku_antrieb = {
+  [0] = "Normal",
+  [1] = "Ohne Akku",
+  [2] = "Nur Akku",
+}
+
+zustand_akku = {
+  [0] = "Aus",
+  [1] = "Ein",
+  [2] = "Störung",
+}
+
+bremsmanager_modus = {
+  [0] = "Normalbetrieb",
+  [1] = "Proportionalbetrieb",
+  [2] = "Pneumatikbetrieb",
+  [3] = "Prellbockbetrieb",
+  [4] = "Putzbetrieb",
+  [5] = "Ecobetrieb",
 }
 
 indusi_einstellungen = {
@@ -1978,11 +2010,7 @@ data_format = {
                         [0x0003] = { typ = "byte", name = "Aktiv", enum = boolean, },
                         [0x0004] = { typ = "single", name = "Max. Kraft [N]" },
                         [0x0005] = { typ = "byte", name = "Antrieb gesperrt", enum = boolean, },
-                        [0x0006] = { typ = "byte", name = "Status Akku-Antrieb", enum = {
-                          [0] = "Normal",
-                          [1] = "Ohne Akku",
-                          [2] = "Nur Akku",
-                        }},
+                        [0x0006] = { typ = "byte", name = "Status Akku-Antrieb", enum = status_akku_antrieb, },
                       },
                     },
                     [0x0026] = {
@@ -2004,11 +2032,7 @@ data_format = {
                       attributes = {
                         [0x0001] = { typ = "string", name = "Name", },
                         [0x0002] = { typ = "single", name = "Gesamtkapazität [J]", },
-                        [0x0003] = { typ = "byte", name = "Status", enum = {
-                          [0] = "Aus",
-                          [1] = "Ein",
-                          [2] = "Störung",
-                        }},
+                        [0x0003] = { typ = "byte", name = "Status", enum = zustand_akku, },
                         [0x0004] = { typ = "byte", name = "Abgetrennt", enum = boolean_1only, },
                         [0x0005] = { typ = "byte", name = "Nummer des zugehörigen Antriebs", },
                         [0x0006] = { typ = "byte", name = "Anzahl Strings pro Akku", },
@@ -2297,14 +2321,7 @@ data_format = {
                         [0x0002] = { typ = "single", name = "Bremskraft dynamische Bremsen (Fahrzeug)", },
                         [0x0003] = { typ = "single", name = "Bremskraft pneumatische Bremsen (Fahrzeug)", },
                         [0x0004] = { typ = "single", name = "Bremsmanager: Bremskraft normiert (Zug)", },
-                        [0x0005] = { typ = "byte", name = "Bremsmanager: Modus", enum = {
-                          [0] = "Normalbetrieb",
-                          [1] = "Proportionalbetrieb",
-                          [2] = "Pneumatikbetrieb",
-                          [3] = "Prellbockbetrieb",
-                          [4] = "Putzbetrieb",
-                          [5] = "Ecobetrieb",
-                        }},
+                        [0x0005] = { typ = "byte", name = "Bremsmanager: Modus", enum = bremsmanager_modus, },
                         [0x0006] = { typ = "byte", name = "Bremsmanager: Schnellbremsung aktiv", enum = boolean_1only, },
                         [0x0007] = { typ = "byte", name = "Bremsmanager: Warten auf Nullstellung nach Schnellbremsung", enum = boolean_1only, },
                         [0x0008] = { typ = "byte", name = "Bremsmanager: Warten auf Nullstellung nach Gleiten", enum = boolean_1only, },
@@ -2552,7 +2569,7 @@ data_format = {
                 [0x0004] = { typ = "byte", name = "Antrieb Nr. sperren", },
                 [0x0005] = { typ = "byte", name = "Antrieb Nr. entsperren", },
                 [0x0006] = { typ = "byte", name = "Traktionsmodus ändern", enum = traktionsmodus, },
-                [0x0007] = { typ = "byte", name = "Status Akku-Antrieb (von 1 beginnend die laufende Nummer)", },
+                [0x0007] = { typ = "byte", name = "Status Akku-Antrieb setzen", enum = incrementKeys(status_akku_antrieb), },
               },
             },
             [0x000C] = {
@@ -2638,8 +2655,8 @@ data_format = {
               attributes = {
                 [0x0001] = { typ = "word", name = "Index Fahrzeug im Zugverband", },
                 [0x0002] = { typ = "string", name = "Name des Akkus", },
-                [0x0003] = { typ = "byte", name = "Status setzen (von 1 beginnend die laufende Nummer)", },
-                [0x0004] = { typ = "byte", name = "Abgetrennt setzen (von 1 beginnend die laufende Nummer)", },
+                [0x0003] = { typ = "byte", name = "Status setzen", enum = incrementKeys(zustand_akku), },
+                [0x0004] = { typ = "byte", name = "Abgetrennt setzen", enum = incrementKeys(boolean), },
               },
             },
           },
@@ -2662,7 +2679,7 @@ data_format = {
             [0x001B] = { typ = "cardinal", name = "Störungsmeldung Nr. quittieren", },
             [0x001C] = { typ = "cardinal", name = "Störungsmeldung Nr. beenden", },
             [0x001D] = { typ = "smallint", name = "Oberstrombegrenzung setzen", },
-            [0x0020] = { typ = "byte", name = "Bremscomputer-Modus setzen (von 1 beginnend die laufende Nummer)", },
+            [0x0020] = { typ = "byte", name = "Bremscomputer-Modus setzen", enum = incrementKeys(bremsmanager_modus), },
           },
         },
         [0x010B] = {
